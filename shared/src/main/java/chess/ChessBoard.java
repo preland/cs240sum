@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -9,9 +10,30 @@ import java.util.ArrayList;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ArrayList<ArrayList<ChessPosition>> board;
+    ArrayList<ArrayList<ChessPiece>> board = new ArrayList<>();
     public ChessBoard() {
-        resetBoard();
+        clearBoard();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.equals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(board);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "board=" + board +
+                '}';
     }
 
     /**
@@ -21,7 +43,10 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow()-1;
+        int col = position.getColumn()-1;
+        board.get(row).set(col, piece);
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -32,9 +57,21 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow()-1;
+        int col = position.getColumn()-1;
+        return board.get(row).get(col);
+        //throw new RuntimeException("Not implemented");
     }
-
+    public void clearBoard() {
+        for (int i = 0; i < 8; i++) {
+            ArrayList<ChessPiece> row = new ArrayList<>();
+            for (int j = 0; j < 8; j++) {
+                row.add(null);
+            }
+            assert board != null;
+            board.add(row);
+        }
+    }
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -43,23 +80,25 @@ public class ChessBoard {
         if(board != null) {
             board.clear();
         }
+        clearBoard();
         String defaultBoard = """
-                rnbqkbnr
-                pppppppp
-                ........
-                ........
-                ........
-                ........
-                PPPPPPPP
                 RNBQKBNR
+                PPPPPPPP
+                ........
+                ........
+                ........
+                ........
+                pppppppp
+                rnbqkbnr
                 """;
         int i = 0;
         int j = 0;
         for(char c: defaultBoard.toCharArray()) {
-            ChessPosition position = new ChessPosition(i, j);
+            ChessPosition position = new ChessPosition(i+1, j+1);
             switch (c) {
                 case '\n':
                     i++;
+                    j=0;
                     break;
                 case 'r':
                     addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
@@ -110,7 +149,7 @@ public class ChessBoard {
                     j++;
                     break;
                 case '.':
-                    addPiece(position, new ChessPiece(null, null));//because this is what is in spec.
+                    addPiece(position, null);//because this is what is in spec.
                     j++;
                     break;
 
