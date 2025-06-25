@@ -9,8 +9,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
+    ChessGame.TeamColor pieceColor;
+    ChessPiece.PieceType type;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -29,14 +32,17 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
+
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -47,6 +53,13 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        //get piece type and piece color at the position
+
+        //depending on piece type, check tiles in a specific pattern
+
+        //check if there is a piece "between" the checked position
+
+        //check if the position has a piece on it that is the same color as the position
         throw new RuntimeException("Not implemented");
     }
 }
