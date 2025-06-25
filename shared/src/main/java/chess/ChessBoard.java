@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +9,9 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
+    ArrayList<ArrayList<ChessPosition>> board;
     public ChessBoard() {
-        
+        resetBoard();
     }
 
     /**
@@ -38,6 +40,82 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        if(board != null) {
+            board.clear();
+        }
+        String defaultBoard = """
+                rnbqkbnr
+                pppppppp
+                ........
+                ........
+                ........
+                ........
+                PPPPPPPP
+                RNBQKBNR
+                """;
+        int i = 0;
+        int j = 0;
+        for(char c: defaultBoard.toCharArray()) {
+            ChessPosition position = new ChessPosition(i, j);
+            switch (c) {
+                case '\n':
+                    i++;
+                    break;
+                case 'r':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                    j++;
+                    break;
+                case 'n':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+                    j++;
+                    break;
+                case 'b':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+                    j++;
+                    break;
+                case 'q':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
+                    j++;
+                    break;
+                case 'k':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+                    j++;
+                    break;
+                case 'p':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+                    j++;
+                    break;
+                case 'R':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                    j++;
+                    break;
+                case 'N':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+                    j++;
+                    break;
+                case 'B':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+                    j++;
+                    break;
+                case 'Q':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
+                    j++;
+                    break;
+                case 'K':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+                    j++;
+                    break;
+                case 'P':
+                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+                    j++;
+                    break;
+                case '.':
+                    addPiece(position, new ChessPiece(null, null));//because this is what is in spec.
+                    j++;
+                    break;
+
+            }
+        }
+        //throw new RuntimeException("Not implemented");
     }
 }
