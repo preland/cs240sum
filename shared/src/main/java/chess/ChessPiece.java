@@ -89,15 +89,15 @@ public class ChessPiece {
         ArrayList<ChessPosition> positions = new ArrayList<>();
         switch(type) {
             case KING -> {
-                addStraights(myPosition, positions, 1);
-                addDiagonals(myPosition, positions, 1);
+                addStraights(board, myPosition, positions, 1);
+                addDiagonals(board, myPosition, positions, 1);
             }
             case QUEEN -> {
-                addStraights(myPosition, positions, 8);
-                addDiagonals(myPosition, positions, 8);
+                addStraights(board, myPosition, positions, 8);
+                addDiagonals(board, myPosition, positions, 8);
             }
             case BISHOP -> {
-                addDiagonals(myPosition, positions, 8);
+                addDiagonals(board, myPosition, positions, 8);
             }
             case KNIGHT -> {
                 safeAddPos(myPosition, positions, 1, 2);
@@ -110,7 +110,7 @@ public class ChessPiece {
                 safeAddPos(myPosition, positions, -2, 1);
             }
             case ROOK -> {
-                addStraights(myPosition, positions, 8);
+                addStraights(board, myPosition, positions, 8);
             }
             case PAWN -> {
                 if(team==WHITE) {
@@ -148,27 +148,106 @@ public class ChessPiece {
     private void safeAddPos(ChessPosition myPosition, ArrayList<ChessPosition> positions, int rowadd, int coladd) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        if(!(row+rowadd < 0 | row+rowadd > 7 | col+coladd < 0 | col+coladd > 7)){
+        if(!(row+rowadd <= 0 | row+rowadd > 8 | col+coladd <= 0 | col+coladd > 8)){
             positions.add(new ChessPosition(row+rowadd, col+coladd));
         }
     }
 
-    private void addDiagonals(ChessPosition myPosition, ArrayList<ChessPosition> positions, int i) {
+    private void addDiagonals(ChessBoard board, ChessPosition myPosition, ArrayList<ChessPosition> positions, int i) {
+        boolean northeast = checkNext(board, myPosition, 1, 1);
+        boolean southeast = checkNext(board, myPosition, -1, +1);
+        boolean southwest = checkNext(board, myPosition, -1, -1);
+        boolean northwest = checkNext(board, myPosition, +1, -1);
         for (int j = 0; j < i; j++) {
-            safeAddPos(myPosition, positions, j+1, j+1);
-            safeAddPos(myPosition, positions, j-1, j-1);
-            safeAddPos(myPosition, positions, j-1, j+1);
-            safeAddPos(myPosition, positions, j+1, j-1);
+            if(northeast) {
+                safeAddPos(myPosition, positions, j + 1, j + 1);
+                northeast = checkNext(board, myPosition, j+2, j+2);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+j+1, myPosition.getColumn()+j+1);
+                if(board.getPiece(currentPos) != null) {
+                    northeast = false;
+                }
+            }
+            if(southwest) {
+                safeAddPos(myPosition, positions, -1*j - 1, -1*j - 1);
+                southwest = checkNext(board, myPosition, -1*j-2, -1*j-2);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+(-1*j)-1, myPosition.getColumn()+(-1*j)-1);
+                if(board.getPiece(currentPos) != null) {
+                    southwest = false;
+                }
+            }
+            if(southeast) {
+                safeAddPos(myPosition, positions, -1*j - 1, j + 1);
+                southeast = checkNext(board, myPosition, -1*j-2, j+2);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+(-1*j)-1, myPosition.getColumn()+j+1);
+                if(board.getPiece(currentPos) != null) {
+                    southeast = false;
+                }
+            }
+            if(northwest) {
+                safeAddPos(myPosition, positions, j + 1, -1*j - 1);
+                northwest = checkNext(board, myPosition, j+2, -1*j-2);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+j+1, myPosition.getColumn()+(-1*j)-1);
+                if(board.getPiece(currentPos) != null) {
+                    northwest = false;
+                }
+            }
         }
     }
 
-    private void addStraights(ChessPosition myPosition, ArrayList<ChessPosition> positions, int i) {
+    private void addStraights(ChessBoard board, ChessPosition myPosition, ArrayList<ChessPosition> positions, int i) {
+        boolean north = checkNext(board, myPosition, 1, 0);
+        boolean south = checkNext(board, myPosition, -1, 0);
+        boolean east = checkNext(board, myPosition, 0, 1);
+        boolean west = checkNext(board, myPosition, 0, -1);
         for (int j = 0; j < i; j++) {
-            safeAddPos(myPosition, positions, j+1, 0);
-            safeAddPos(myPosition, positions, j-1, 0);
-            safeAddPos(myPosition, positions, 0, j+1);
-            safeAddPos(myPosition, positions, 0, j-1);
+            if(north) {
+                safeAddPos(myPosition, positions, j + 1, 0);
+                north = checkNext(board, myPosition, j+2, 0);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+j+1, myPosition.getColumn());
+                if(board.getPiece(currentPos) != null) {
+                    north = false;
+                }
+            }
+            if(south) {
+                safeAddPos(myPosition, positions, j - 1, 0);
+                south = checkNext(board, myPosition, j-2, 0);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+j+1, myPosition.getColumn());
+                if(board.getPiece(currentPos) != null) {
+                    south = false;
+                }
+            }
+            if(east) {
+                safeAddPos(myPosition, positions, 0, j + 1);
+                east = checkNext(board, myPosition, 0, j+2);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+(-1*j)-1);
+                if(board.getPiece(currentPos) != null) {
+                    east = false;
+                }
+            }
+            if(west) {
+                safeAddPos(myPosition, positions, 0, j - 1);
+                west = checkNext(board, myPosition, 0, j-2);
+                ChessPosition currentPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+(-1*j)-1);
+                if(board.getPiece(currentPos) != null) {
+                    west = false;
+                }
+            }
         }
+    }
+    private boolean checkNext(ChessBoard board, ChessPosition myPosition, int rowadd, int coladd) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessPiece startPiece = board.getPiece(myPosition);
+        ChessPiece targetPiece = null;
+        if(!(row+rowadd <= 0 | row+rowadd > 8 | col+coladd <= 0 | col+coladd > 8)){
+            targetPiece = board.getPiece(new ChessPosition(row+rowadd, col+coladd));
+            if(targetPiece == null) {
+                return true;
+            }
+            return targetPiece.getTeamColor() != startPiece.getTeamColor();
+
+        }
+        return false;
     }
 
 }
