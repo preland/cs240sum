@@ -94,7 +94,12 @@ public class ChessBoard {
         int i = 0;
         int j = 0;
         for(char c: defaultBoard.toCharArray()) {
-            ChessPosition position = new ChessPosition(i+1, j+1);
+            ChessPosition position = null;
+            try {
+                position = new ChessPosition(i + 1, j + 1);
+            } catch (InvalidPositionException e) {
+                //continue;
+            }
             switch (c) {
                 case '\n':
                     i++;
