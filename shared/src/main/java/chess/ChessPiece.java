@@ -100,14 +100,8 @@ public class ChessPiece {
                 addDiagonals(board, myPosition, positions, 8);
             }
             case KNIGHT -> {
-                safeAddPos(myPosition, positions, 1, 2);
-                safeAddPos(myPosition, positions, 2, 1);
-                safeAddPos(myPosition, positions, 1, -2);
-                safeAddPos(myPosition, positions, 2, -1);
-                safeAddPos(myPosition, positions, -1, -2);
-                safeAddPos(myPosition, positions, -2, -1);
-                safeAddPos(myPosition, positions, -1, 2);
-                safeAddPos(myPosition, positions, -2, 1);
+                handleKnight(board, myPosition, positions);
+
             }
             case ROOK -> {
                 addStraights(board, myPosition, positions, 8);
@@ -136,6 +130,36 @@ public class ChessPiece {
         //check if the position has a piece on it that is the same color as the position
         //throw new RuntimeException("Not implemented");
         return moves;
+    }
+
+    private void handleKnight(ChessBoard board, ChessPosition myPosition, ArrayList<ChessPosition> positions) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessGame.TeamColor team = board.getPiece(myPosition).getTeamColor();
+
+        blockCheck(board, myPosition, positions, 1, 2);
+        blockCheck(board, myPosition, positions, 1, -2);
+        blockCheck(board, myPosition, positions, 2, 1);
+        blockCheck(board, myPosition, positions, 2, -1);
+        blockCheck(board, myPosition, positions, -1, -2);
+        blockCheck(board, myPosition, positions, -2, -1);
+        blockCheck(board, myPosition, positions, -1, 2);
+        blockCheck(board, myPosition, positions, -2, 1);
+    }
+
+    private void blockCheck(ChessBoard board, ChessPosition myPosition, ArrayList<ChessPosition> positions, int rowadd, int coladd) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessGame.TeamColor team = board.getPiece(myPosition).getTeamColor();
+        try {
+            if (board.getPiece(new ChessPosition(row + rowadd, col + coladd)) == null) {
+                safeAddPos(myPosition, positions, rowadd, coladd);
+            } else if (team != board.getPiece(new ChessPosition(row + rowadd, col + coladd)).getTeamColor()) {
+                safeAddPos(myPosition, positions, rowadd, coladd);
+            }
+        } catch (InvalidPositionException e) {
+            //nothing
+        }
     }
 
     private void addForwards(ChessBoard board, ChessPosition myPosition, ArrayList<ChessPosition> positions) {
