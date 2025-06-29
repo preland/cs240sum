@@ -203,32 +203,48 @@ public class ChessPiece {
             if(north) {
                 safeAddPos(myPosition, positions, j + 1, 0);
                 north = checkNext(board, myPosition, j+2, 0);
-                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+j+1, myPosition.getColumn());
-                if(board.getPiece(currentPos) != null) {
+                try {
+                    ChessPosition currentPos = new ChessPosition(myPosition.getRow()+ j+1, myPosition.getColumn() );
+                    if (board.getPiece(currentPos) != null) {
+                        north = false;
+                    }
+                } catch (InvalidPositionException e) {
                     north = false;
                 }
             }
             if(south) {
-                safeAddPos(myPosition, positions, j - 1, 0);
-                south = checkNext(board, myPosition, j-2, 0);
-                ChessPosition currentPos = new ChessPosition(myPosition.getRow()+j+1, myPosition.getColumn());
-                if(board.getPiece(currentPos) != null) {
+                safeAddPos(myPosition, positions, -1*j - 1, 0);
+                south = checkNext(board, myPosition, -1*j-2, 0);
+                try {
+                    ChessPosition currentPos = new ChessPosition(myPosition.getRow()+ (-1 * j) - 1, myPosition.getColumn() );
+                    if (board.getPiece(currentPos) != null) {
+                        south = false;
+                    }
+                } catch (InvalidPositionException e) {
                     south = false;
                 }
             }
             if(east) {
                 safeAddPos(myPosition, positions, 0, j + 1);
                 east = checkNext(board, myPosition, 0, j+2);
-                ChessPosition currentPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+(-1*j)-1);
-                if(board.getPiece(currentPos) != null) {
+                try {
+                    ChessPosition currentPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + j + 1);
+                    if (board.getPiece(currentPos) != null) {
+                        east = false;
+                    }
+                } catch (InvalidPositionException e) {
                     east = false;
                 }
             }
             if(west) {
-                safeAddPos(myPosition, positions, 0, j - 1);
-                west = checkNext(board, myPosition, 0, j-2);
-                ChessPosition currentPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+(-1*j)-1);
-                if(board.getPiece(currentPos) != null) {
+                safeAddPos(myPosition, positions, 0, -1*j - 1);
+                west = checkNext(board, myPosition, 0, -1*j-2);
+                try {
+                    ChessPosition currentPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + (-1 * j) - 1);
+                    if (board.getPiece(currentPos) != null) {
+                        west = false;
+                    }
+                } catch (InvalidPositionException e) {
                     west = false;
                 }
             }

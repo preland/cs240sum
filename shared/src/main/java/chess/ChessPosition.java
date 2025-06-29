@@ -11,8 +11,16 @@ import java.util.Objects;
 public class ChessPosition {
     int row, col;
     public ChessPosition(int row, int col) {
-        this.row = row;
-        this.col = col;
+        if(row <= 0 | row > 8 ) {
+            throw new InvalidPositionException("row: " + row);
+        } else {
+            this.row = row;
+        }
+        if(col <= 0 | col > 8 ) {
+            throw new InvalidPositionException("col: " + col);
+        } else {
+            this.col = col;
+        }
     }
 
     @Override
