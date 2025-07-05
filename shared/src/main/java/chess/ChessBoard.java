@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -12,7 +13,14 @@ import java.util.Objects;
 public class ChessBoard {
     ArrayList<ArrayList<ChessPiece>> board = new ArrayList<>();
     public ChessBoard() {
-        clearBoard();
+        for (int i = 0; i < 8; i++) {
+            ArrayList<ChessPiece> buf = new ArrayList<>();
+            for (int j = 0; j < 8; j++) {
+                buf.add(null);
+            }
+            this.board.add(buf);
+        }
+        //iirc dont run reset here
     }
 
     @Override
@@ -43,9 +51,9 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        int row = position.getRow()-1;
-        int col = position.getColumn()-1;
-        board.get(row).set(col, piece);
+        int rowidx = position.getRow()-1;
+        int colidx = position.getColumn()-1;
+        board.get(rowidx).set(colidx, piece);
         //throw new RuntimeException("Not implemented");
     }
 
@@ -57,31 +65,18 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        int row = position.getRow()-1;
-        int col = position.getColumn()-1;
-        return board.get(row).get(col);
+        int rowidx = position.getRow()-1;
+        int colidx = position.getColumn()-1;
+        return board.get(rowidx).get(colidx);
         //throw new RuntimeException("Not implemented");
     }
-    public void clearBoard() {
-        for (int i = 0; i < 8; i++) {
-            ArrayList<ChessPiece> row = new ArrayList<>();
-            for (int j = 0; j < 8; j++) {
-                row.add(null);
-            }
-            assert board != null;
-            board.add(row);
-        }
-    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        if(board != null) {
-            board.clear();
-        }
-        clearBoard();
-        String defaultBoard = """
+        String startingBoard = """
                 RNBQKBNR
                 PPPPPPPP
                 ........
@@ -91,74 +86,56 @@ public class ChessBoard {
                 pppppppp
                 rnbqkbnr
                 """;
-        int i = 0;
-        int j = 0;
-        for(char c: defaultBoard.toCharArray()) {
-            ChessPosition position = null;
-            try {
-                position = new ChessPosition(i + 1, j + 1);
-            } catch (InvalidPositionException e) {
-                //continue;
-            }
-            switch (c) {
+        int row = 1;
+        int col = 1;
+        for(char c: startingBoard.toCharArray()) {
+            ChessPiece piece = null;
+            switch(c) {
                 case '\n':
-                    i++;
-                    j=0;
-                    break;
-                case 'r':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
-                    j++;
-                    break;
-                case 'n':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
-                    j++;
-                    break;
-                case 'b':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
-                    j++;
-                    break;
-                case 'q':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
-                    j++;
-                    break;
-                case 'k':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
-                    j++;
-                    break;
-                case 'p':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-                    j++;
-                    break;
+                    col = 1;
+                    row++;
+                    continue;
                 case 'R':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-                    j++;
+                    piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
                     break;
                 case 'N':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
-                    j++;
+                    piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
                     break;
                 case 'B':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
-                    j++;
-                    break;
-                case 'Q':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
-                    j++;
+                    piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
                     break;
                 case 'K':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
-                    j++;
+                    piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+                    break;
+                case 'Q':
+                    piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
                     break;
                 case 'P':
-                    addPiece(position, new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-                    j++;
+                    piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
                     break;
-                case '.':
-                    addPiece(position, null);//because this is what is in spec.
-                    j++;
+                case 'r':
+                    piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
                     break;
-
+                case 'n':
+                    piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+                    break;
+                case 'b':
+                    piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+                    break;
+                case 'k':
+                    piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+                    break;
+                case 'q':
+                    piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+                    break;
+                case 'p':
+                    piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+                    break;
+                default:
+                    break;
             }
+            this.addPiece(new ChessPosition(row, col), piece);
+            col++;
         }
         //throw new RuntimeException("Not implemented");
     }

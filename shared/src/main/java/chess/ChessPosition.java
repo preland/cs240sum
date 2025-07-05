@@ -9,18 +9,18 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
-    int row, col;
-    public ChessPosition(int row, int col) {
-        if(row <= 0 | row > 8 ) {
-            throw new InvalidPositionException("row: " + row);
-        } else {
-            this.row = row;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
         }
-        if(col <= 0 | col > 8 ) {
-            throw new InvalidPositionException("col: " + col);
-        } else {
-            this.col = col;
-        }
+        ChessPosition that = (ChessPosition) o;
+        return row == that.row && col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, col);
     }
 
     @Override
@@ -31,18 +31,12 @@ public class ChessPosition {
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPosition position = (ChessPosition) o;
-        return row == position.row && col == position.col;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(row, col);
+    int row;
+    int col;
+    public ChessPosition(int row, int col) {
+        int offset = 0;
+        this.row = row+offset;
+        this.col = col+offset;
     }
 
     /**
@@ -50,7 +44,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return row;
+        return this.row;
         //throw new RuntimeException("Not implemented");
     }
 
@@ -59,7 +53,7 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return col;
+        return this.col;
         //throw new RuntimeException("Not implemented");
     }
 }
