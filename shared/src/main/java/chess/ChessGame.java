@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,8 +11,34 @@ import java.util.Collection;
  */
 public class ChessGame {
     TeamColor team;
+    ChessBoard board = new ChessBoard();
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return team == chessGame.team && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, board);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "team=" + team +
+                ", board=" + board +
+                '}';
+    }
+
     public ChessGame() {
 
+        this.team = TeamColor.WHITE;
+        this.board.resetBoard();
     }
 
     /**
@@ -58,7 +85,33 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition targetPosition = move.getEndPosition();
+        ChessPiece startPiece = board.getPiece(startPosition);
+        ChessPiece targetPiece = board.getPiece(targetPosition);
+        TeamColor team = startPiece.getTeamColor();
+        //is the move trivially valid
+        if(!startPiece.pieceMoves(board, startPosition).contains(move)) {
+            throw new InvalidMoveException("invalid move");
+        }
+        //create new board with move
+        ChessBoard tempBoard = unsafeMakeMove(move);
+        if(isInCheck(team) || isInCheckmate(team) || isInStalemate(team)){
+            throw new InvalidMoveException("invalid move");
+        }
+        this.board = tempBoard;
+        //throw new RuntimeException("Not implemented");
+    }
+    public ChessBoard unsafeMakeMove(ChessMove move) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition targetPosition = move.getEndPosition();
+        ChessPiece startPiece = board.getPiece(startPosition);
+        ChessPiece targetPiece = board.getPiece(targetPosition);
+
+        ChessBoard tempBoard = board;
+        tempBoard.addPiece(targetPosition, startPiece);
+        tempBoard.addPiece(startPosition, null);
+        return tempBoard;
     }
 
     /**
@@ -68,7 +121,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return false;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -78,7 +132,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return false;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -89,7 +144,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return false;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -98,7 +154,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -107,6 +164,7 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
+        //throw new RuntimeException("Not implemented");
     }
 }
