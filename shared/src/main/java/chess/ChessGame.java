@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -89,7 +90,14 @@ public class ChessGame {
         ChessPosition targetPosition = move.getEndPosition();
         ChessPiece startPiece = board.getPiece(startPosition);
         ChessPiece targetPiece = board.getPiece(targetPosition);
-        TeamColor team = startPiece.getTeamColor();
+        if(startPiece == null) {
+            throw new InvalidMoveException("invalid move");
+        }
+        TeamColor teamPiece = startPiece.getTeamColor();
+        //is the move for the right team
+        if(teamPiece != team) {
+            throw new InvalidMoveException("invalid move");
+        }
         //is the move trivially valid
         if(!startPiece.pieceMoves(board, startPosition).contains(move)) {
             throw new InvalidMoveException("invalid move");
@@ -100,6 +108,11 @@ public class ChessGame {
             throw new InvalidMoveException("invalid move");
         }
         this.board = tempBoard;
+        if(this.team == TeamColor.WHITE){
+            this.team = TeamColor.BLACK;
+        } else {
+            this.team = TeamColor.WHITE;
+        }
         //throw new RuntimeException("Not implemented");
     }
     public ChessBoard unsafeMakeMove(ChessMove move) {
@@ -107,9 +120,14 @@ public class ChessGame {
         ChessPosition targetPosition = move.getEndPosition();
         ChessPiece startPiece = board.getPiece(startPosition);
         ChessPiece targetPiece = board.getPiece(targetPosition);
-
+        ChessPiece endPiece = startPiece;
         ChessBoard tempBoard = board;
-        tempBoard.addPiece(targetPosition, startPiece);
+
+        if(move.getPromotionPiece() != null) {
+            endPiece = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
+        }
+
+        tempBoard.addPiece(targetPosition, endPiece);
         tempBoard.addPiece(startPosition, null);
         return tempBoard;
     }
@@ -121,10 +139,50 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return false;
+        ChessPosition kingPiece = findKingPiece(teamColor);
+        TeamColor otherTeam = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        if(allTeamAttacking(otherTeam).contains(kingPiece)) {
+            return true;
+        } else {
+            return false;
+        }
+        //return false;
         //throw new RuntimeException("Not implemented");
     }
 
+    private ChessPosition findKingPiece(TeamColor teamColor) {
+        for (int i = 1; i < 8; i++) {
+            for (int j = 1; j < 8; j++) {
+                ChessPosition tempPosition = new ChessPosition(i, j);
+                if(Objects.equals(board.getPiece(tempPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
+                    return tempPosition;//board.getPiece(tempPosition);
+                }
+            }
+        }
+        return null;
+    }
+    private Collection<ChessPosition> allTeamAttacking(TeamColor teamColor) {
+        Collection<ChessPosition> positions = new ArrayList<>();
+        for (int i = 1; i < 8; i++) {
+            for (int j = 1; j < 8; j++) {
+                ChessPosition tempPosition = new ChessPosition(i, j);
+                ChessPiece tempPiece = board.getPiece(tempPosition);
+                if(tempPiece == null) {
+                    continue;
+                }
+                Collection<ChessMove> moves = tempPiece.pieceMoves(board, tempPosition);
+                if(moves == null) {
+                    continue;
+                }
+                for(ChessMove move: moves) {
+                    if(tempPiece.getTeamColor() == teamColor && !positions.contains(move.getEndPosition())) {
+                        positions.add(move.getEndPosition());
+                    }
+                }
+            }
+        }
+        return positions;
+    }
     /**
      * Determines if the given team is in checkmate
      *
