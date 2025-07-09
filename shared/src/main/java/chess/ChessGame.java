@@ -241,6 +241,10 @@ public class ChessGame {
         ChessPosition kingPiece = findKingPiece(teamColor, givenBoard);
         //ChessBoard tempBoard = givenBoard;
         TeamColor otherTeam = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        return fn1(allAttacksSame, teamColor, givenBoard);
+
+    }
+    public boolean fn1(Collection<ChessMove> allAttacksSame, TeamColor teamColor, ChessBoard givenBoard) {
         for(ChessMove move : allAttacksSame) {
             ChessBoard tempBoard = givenBoard.copy();
             unsafeMakeMove(move, tempBoard);
@@ -250,7 +254,6 @@ public class ChessGame {
         }
         return true;
     }
-
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves while not in check.
@@ -267,14 +270,7 @@ public class ChessGame {
         if(isInCheck(teamColor, givenBoard)) {
             return false;
         }
-        for(ChessMove move : allAttacksSame) {
-            ChessBoard tempBoard = givenBoard.copy();
-            unsafeMakeMove(move, tempBoard);
-            if(!isInCheck(teamColor, tempBoard)) {
-                return false;
-            }
-        }
-        return true;
+        return fn1(allAttacksSame, teamColor, givenBoard);
     }
 
     /**
