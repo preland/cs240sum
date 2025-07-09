@@ -182,21 +182,6 @@ public class ChessGame {
             }
         }
 
-
- /*       for(ChessMove move : allAttacksOpposing) {
-            if (move.getEndPosition().equals(kingPiece)) {
-                for(ChessMove move2 : allAttacksSame) {
-                    ChessBoard tempBoard = this.board;
-                    unsafeMakeMove(move2, tempBoard);
-                    Collection<ChessMove> finalMoves = allTeamAttacking(otherTeam, tempBoard);
-                    for(ChessMove move3 : finalMoves) {
-                        if (move3.getEndPosition() != findKingPiece(teamColor, tempBoard)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }*/
         return false;
         //throw new RuntimeException("Not implemented");
     }
@@ -264,13 +249,6 @@ public class ChessGame {
             }
         }
         return true;
-        /*for(ChessMove move: givenBoard.getPiece(kingPiece).pieceMoves(board, kingPiece)) {
-            if (!allTeamAttacking(otherTeam, givenBoard).contains(move.getEndPosition())) {
-                return true;
-            }
-        }
-        return false;*/
-        //throw new RuntimeException("Not implemented");
     }
 
     /**

@@ -185,7 +185,8 @@ public class ChessPiece {
         }
     }
 
-    public boolean safeAddPos(ChessBoard board, Collection<ChessMove> moves, ChessPosition myPosition, int rowOffset, int colOffset, boolean mustCapture) {
+    public boolean safeAddPos(ChessBoard board, Collection<ChessMove> moves,
+                              ChessPosition myPosition, int rowOffset, int colOffset, boolean mustCapture) {
         ChessPosition targetPosition = new ChessPosition(myPosition.getRow()+rowOffset, myPosition.getColumn()+colOffset);
         int rowidx = targetPosition.getRow()-1;
         int colidx = targetPosition.getColumn()-1;
@@ -201,7 +202,8 @@ public class ChessPiece {
             } else {
                 //isNotBlocked = false;
                 if(mustCapture | startPiece.getPieceType() != PieceType.PAWN) {
-                    if((startPiece.getPieceType() == PieceType.PAWN && (startPiece.pieceColor == ChessGame.TeamColor.WHITE && targetPosition.getRow() == 8) |
+                    if((startPiece.getPieceType() == PieceType.PAWN &&
+                            (startPiece.pieceColor == ChessGame.TeamColor.WHITE && targetPosition.getRow() == 8) |
                             (startPiece.pieceColor == ChessGame.TeamColor.BLACK && targetPosition.getRow() == 1))) {
                         moves.add(new ChessMove(myPosition, targetPosition, PieceType.QUEEN));
                         moves.add(new ChessMove(myPosition, targetPosition, PieceType.ROOK));
