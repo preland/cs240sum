@@ -23,6 +23,24 @@ public class ChessBoard {
         //iirc dont run reset here
     }
 
+    public ChessBoard copy() {
+        //ChessBoard chessBoard = (ChessBoard) super.clone();
+        ChessBoard copy = new ChessBoard();
+        copy.board = new ArrayList<>();
+        for (ArrayList<ChessPiece> row : this.board) {
+            ArrayList<ChessPiece> rowCopy = new ArrayList<>();
+            for (ChessPiece piece : row) {
+                if (piece != null) {
+                    rowCopy.add(piece.copy()); // assumes ChessPiece implements clone()
+                } else {
+                    rowCopy.add(null);
+                }
+            }
+            copy.board.add(rowCopy);
+        }
+        return copy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
