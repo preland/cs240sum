@@ -6,6 +6,7 @@ import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DataAccess {
     private MemoryStore storage;
@@ -62,7 +63,12 @@ public class DataAccess {
     }
 
     public boolean checkForColor(int gameID, String playerColor) {
-        return storage.getGame(gameID).playerColor() == null;
+        if(Objects.equals(playerColor, "WHITE")) {
+            return storage.getGame(gameID).whiteUsername() == null;
+        }
+        else {
+            return storage.getGame(gameID).blackUsername() == null;
+        }
     }
 
     public void joinGame(String username, String playerColor, int gameID) {

@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -9,6 +10,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class MemoryStore {
+    private int iter = 0;
     private static final MemoryStore instance = new MemoryStore();
     ArrayList<UserData> userData = new ArrayList<>();
     ArrayList<AuthData> authData = new ArrayList<>();
@@ -50,10 +52,33 @@ public class MemoryStore {
     }
 
     public boolean deleteAuth(String authToken) {
-        AuthData testData = authData.stream().filter(ad -> ad.equals(ad.authToken())).findFirst().orElse(null);
+        AuthData testData = authData.stream().filter(ad -> authToken.equals(ad.authToken())).findFirst().orElse(null);
         if(testData == null) {
             return false;
         }
         return authData.remove(testData);
+    }
+
+    public String getUsername(String authToken) {
+        AuthData testData = authData.stream().filter(ad -> authToken.equals(ad.authToken())).findFirst().orElse(null);
+        if(testData == null) {
+            return null;
+        }
+        return testData.username();
+    }
+
+    public ArrayList<GameData> listGames() {
+        return gameData;
+    }
+
+    public GameData createGame(String gameName) {
+        GameData newGame = new GameData(iter, null, null, gameName, new ChessGame());
+        iter++;
+        gameData.add(newGame);
+        return newGame;
+    }
+
+    public GameData getGame(int gameID) {
+        return gameData.stream().filter(g -> gameID==g.gameID()).findFirst().orElse(null);
     }
 }
