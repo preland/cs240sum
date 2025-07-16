@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import service.Service;
 import service.ServiceException;
 import spark.*;
 
@@ -13,14 +14,17 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", (request, response) -> {
-            response.status(200);
+            //response.status(200);
 
             try {
                 //todo: clear database
-                throw new ServiceException("error go away pls");
-                //return "{}";
-            } catch (ServiceException e) {
+                Service.getInstance().clear();
+                response.status(200);
+                //throw new ServiceException("error go away pls");
                 return "{}";
+            } catch (ServiceException e) {
+                response.status(500);
+                return e.toString();
             }
 
         });
