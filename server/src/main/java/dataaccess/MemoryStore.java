@@ -6,6 +6,7 @@ import model.UserData;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MemoryStore {
     private static final MemoryStore instance = new MemoryStore();
@@ -37,5 +38,22 @@ public class MemoryStore {
         UserData newUser = new UserData(username, password, email);
         userData.add(newUser);
         return newUser;
+    }
+    public AuthData createAuth(String username, String password) {
+        AuthData newAuth = new AuthData(generateToken(), username);
+        authData.add(newAuth);
+        return newAuth;
+    }
+
+    private String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    public boolean deleteAuth(String authToken) {
+        AuthData testData = authData.stream().filter(ad -> ad.equals(ad.authToken())).findFirst().orElse(null);
+        if(testData == null) {
+            return false;
+        }
+        return authData.remove(testData);
     }
 }
