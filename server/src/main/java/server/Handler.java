@@ -67,6 +67,7 @@ public class Handler {
         String authToken = jsonObject.get("authToken").getAsString();
         String playerColor = jsonObject.get("playerColor").getAsString();
         int gameID = jsonObject.get("gameID").getAsInt();
+        service.joinGame(authToken, playerColor, gameID);
     }
 }
 

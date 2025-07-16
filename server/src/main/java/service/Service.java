@@ -47,5 +47,28 @@ public class Service {
         if(username == null) {
             throw new ServiceException("unauthorized");
         }
+        return dataAccess.listGames();
+    }
+
+    public int createGame(String authToken, String gameName) throws ServiceException {
+        String username = dataAccess.getUsername(authToken);
+        if(username == null) {
+            throw new ServiceException("unauthorized");
+        }
+        return dataAccess.createGame(gameName);
+    }
+
+    public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
+        String username = dataAccess.getUsername(authToken);
+        if(username == null) {
+            throw new ServiceException("unauthorized");
+        }
+        if(!dataAccess.doesGameExist(gameID)) {
+            throw new ServiceException("bad request");
+        }
+        if(!dataAccess.checkForColor(gameID, playerColor)) {
+            throw new ServiceException("already taken");
+        }
+        dataAccess.joinGame(username, playerColor, gameID);
     }
 }
