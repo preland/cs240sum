@@ -81,4 +81,19 @@ public class MemoryStore {
     public GameData getGame(int gameID) {
         return gameData.stream().filter(g -> gameID==g.gameID()).findFirst().orElse(null);
     }
+
+    public void modifyGame(int gameID, String username, String playerColor) {
+        GameData game = getGame(gameID);
+        int index = gameData.indexOf(game);
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
+        String gameName = game.gameName();
+        ChessGame chessGame = game.game();
+        if(Objects.equals(playerColor, "WHITE")) {
+            gameData.set(index, new GameData(gameID, username, blackUsername, gameName, chessGame));
+        } else {
+            gameData.set(index, new GameData(gameID, whiteUsername, username, gameName, chessGame));
+
+        }
+    }
 }
