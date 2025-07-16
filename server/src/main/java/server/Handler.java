@@ -27,7 +27,7 @@ public class Handler {
         String password = jsonObject.get("password").getAsString();
         String email = jsonObject.get("email").getAsString();
 
-        return service.register(username, password, email);
+        return serializer.toJson(service.register(username, password, email));
     }
 
     public String login(String body) throws ServiceException {
@@ -36,7 +36,7 @@ public class Handler {
         String username = jsonObject.get("username").getAsString();
         String password = jsonObject.get("password").getAsString();
 
-        return service.login(username, password);
+        return serializer.toJson(service.login(username, password));
     }
 
     public void logout(String body) throws ServiceException {

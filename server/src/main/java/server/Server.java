@@ -40,7 +40,9 @@ public class Server {
                 return userData;
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
+                response.status(403);
+                return e.toString();
             }
         });
         Spark.post("/session", (request, response) -> {
@@ -50,7 +52,9 @@ public class Server {
                 return authData;
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
+                response.status(400);
+                return e.toString();
             }
         });
         Spark.delete("/session", (request, response) -> {
@@ -60,7 +64,9 @@ public class Server {
                 return "{}";
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
+                response.status(401);
+                return e.toString();
             }
         });
         Spark.get("/game", (request, response) -> {
@@ -70,7 +76,9 @@ public class Server {
                 return gameData.toString();
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
+                response.status(401);
+                return e.toString();
             }
         });
         Spark.post("/game", (request, response) -> {
@@ -80,7 +88,9 @@ public class Server {
                return gameID;
            } catch (ServiceException e) {
                //todo: implement proper failure modes
-               throw new RuntimeException(e);
+               //throw new RuntimeException(e);
+               response.status(401);
+               return e.toString();
            }
         });
         Spark.put("/game", (request, response) -> {
@@ -90,7 +100,10 @@ public class Server {
                 return "{}";
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
+                //todo: impl proper response codes
+                response.status(400);
+                return e.toString();
             }
         });
         //This line initializes the server and can be removed once you have a functioning endpoint 

@@ -22,7 +22,7 @@ public class Service {
     }
     public AuthData register(String username, String password, String email) throws ServiceException {
         if(dataAccess.getUser(username, password) != null) {
-            throw new ServiceException("username already taken");
+            throw new ServiceException("already taken");
         }
         //todo: error handling for userData stuffs
         UserData userData = dataAccess.createUser(username, password, email);
@@ -32,6 +32,7 @@ public class Service {
     public AuthData login(String username, String password) throws ServiceException {
         UserData userData = dataAccess.getUser(username, password);
         if(userData == null) {
+            //todo: figure out how to get the other one
             throw new ServiceException("user doesn't exist");
         }
         return dataAccess.createAuth(userData);
