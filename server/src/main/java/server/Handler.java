@@ -1,8 +1,13 @@
-package service;
+package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dataaccess.DataAccess;
+import model.GameData;
+import service.Service;
+import service.ServiceException;
+
+import java.util.ArrayList;
 
 public class Handler {
     private static final Handler instance = new Handler();
@@ -23,6 +28,37 @@ public class Handler {
         String email = jsonObject.get("email").getAsString();
 
         return service.register(username, password, email);
+    }
+
+    public String login(String body) throws ServiceException {
+        var serializer = new Gson();
+        JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
+        String username = jsonObject.get("username").getAsString();
+        String password = jsonObject.get("password").getAsString();
+
+        return service.login(username, password);
+    }
+
+    public void logout(String body) throws ServiceException {
+        var serializer = new Gson();
+        JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
+        String authToken = jsonObject.get("authToken").getAsString();
+        service.logout(authToken);
+    }
+
+    public ArrayList<GameData> listGames(String body) throws ServiceException {
+        var serializer = new Gson();
+        JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
+        String authToken = jsonObject.get("authToken").getAsString();
+        return service.listGames(authToken);
+    }
+
+    public int createGame(String body) throws ServiceException {
+        var serializer = new Gson();
+        JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
+        String authToken = jsonObject.get("authToken").getAsString();
+        String gameName = jsonObject.get("gameName").getAsString();
+        return service.createGame(authToken, gameName);
     }
 }
 

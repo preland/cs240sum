@@ -4,7 +4,7 @@ import chess.ChessPiece;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
-import service.Handler;
+import server.Handler;
 import service.Service;
 import service.ServiceException;
 import spark.*;
@@ -73,7 +73,26 @@ public class Server {
                 throw new RuntimeException(e);
             }
         });
-
+        Spark.post("/game", (request, response) -> {
+           try {
+               int gameID = Handler.getInstance().createGame(request.body());
+               response.status(200);
+               return gameID;
+           } catch (ServiceException e) {
+               //todo: implement proper failure modes
+               throw new RuntimeException(e);
+           }
+        });
+        Spark.put("/game", (request, response) -> {
+            try {
+                Handler.getInstance().joinGame(request.body());
+                response.status(200);
+                return "{}";
+            } catch (ServiceException e) {
+                //todo: implement proper failure modes
+                throw new RuntimeException(e);
+            }
+        });
         //This line initializes the server and can be removed once you have a functioning endpoint 
         //Spark.init();
 
