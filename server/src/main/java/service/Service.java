@@ -56,7 +56,7 @@ public class Service {
         if(username == null) {
             throw new ServiceException("unauthorized");
         }
-        return dataAccess.createGame(gameName);
+        return dataAccess.createGame(gameName).gameID();
     }
 
     public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {

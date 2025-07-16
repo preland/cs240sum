@@ -1,8 +1,11 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
+
+import java.util.ArrayList;
 
 public class DataAccess {
     private MemoryStore storage;
@@ -44,5 +47,25 @@ public class DataAccess {
 
     public String getUsername(String authToken) {
         return storage.getUsername(authToken);
+    }
+
+    public ArrayList<GameData> listGames() {
+        return storage.listGames();
+    }
+
+    public GameData createGame(String gameName) {
+        return storage.createGame(gameName);
+    }
+
+    public boolean doesGameExist(int gameID) {
+        return storage.getGame(gameID) != null;
+    }
+
+    public boolean checkForColor(int gameID, String playerColor) {
+        return storage.getGame(gameID).playerColor() == null;
+    }
+
+    public void joinGame(String username, String playerColor, int gameID) {
+        storage.modifyGame(gameID, username, playerColor);
     }
 }
