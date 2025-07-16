@@ -60,5 +60,13 @@ public class Handler {
         String gameName = jsonObject.get("gameName").getAsString();
         return service.createGame(authToken, gameName);
     }
+
+    public void joinGame(String body) throws ServiceException {
+        var serializer = new Gson();
+        JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
+        String authToken = jsonObject.get("authToken").getAsString();
+        String playerColor = jsonObject.get("playerColor").getAsString();
+        int gameID = jsonObject.get("gameID").getAsInt();
+    }
 }
 
