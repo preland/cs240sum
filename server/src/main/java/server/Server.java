@@ -1,6 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
+import model.UserData;
+import service.Handler;
 import service.Service;
 import service.ServiceException;
 import spark.*;
@@ -18,7 +20,7 @@ public class Server {
 
             try {
                 //todo: clear database
-                Service.getInstance().clear();
+                Handler.getInstance().clear();
                 response.status(200);
                 //throw new ServiceException("error go away pls");
                 return "{}";
@@ -29,7 +31,14 @@ public class Server {
 
         });
         Spark.post("/user", (request, response) -> {
-
+            try {
+                String userData = Handler.getInstance().register(request.body());
+                response.status(200);
+                return userData;
+            } catch (ServiceException e) {
+                //todo: implement proper failure modes
+                throw new RuntimeException(e);
+            }
         });
         //This line initializes the server and can be removed once you have a functioning endpoint 
         //Spark.init();
