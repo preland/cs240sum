@@ -1,5 +1,7 @@
 package server;
 
+import com.google.gson.Gson;
+import service.ServiceException;
 import spark.*;
 
 public class Server {
@@ -10,7 +12,18 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.delete("/db", (request, response) -> {
+            response.status(200);
 
+            try {
+                //todo: clear database
+                throw new ServiceException("error go away pls");
+                //return "{}";
+            } catch (ServiceException e) {
+                return "{}";
+            }
+
+        });
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
