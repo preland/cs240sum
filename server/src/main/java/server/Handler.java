@@ -47,33 +47,33 @@ public class Handler {
         }
     }
 
-    public void logout(String body) throws ServiceException {
+    public void logout(String body, String authToken) throws ServiceException {
         try {
         var serializer = new Gson();
         JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
-        String authToken = jsonObject.get("authToken").getAsString();
+        //String authToken = jsonObject.get("authToken").getAsString();
         service.logout(authToken);
         } catch (NullPointerException e) {
             throw new ServiceException(400);
         }
     }
 
-    public ArrayList<GameData> listGames(String body) throws ServiceException {
+    public ArrayList<GameData> listGames(String body, String authToken) throws ServiceException {
         try {
         var serializer = new Gson();
         JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
-        String authToken = jsonObject.get("authToken").getAsString();
+        //String authToken = jsonObject.get("authToken").getAsString();
         return service.listGames(authToken);
         } catch (NullPointerException e) {
             throw new ServiceException(400);
         }
     }
 
-    public int createGame(String body) throws ServiceException {
+    public int createGame(String body, String authToken) throws ServiceException {
         try {
         var serializer = new Gson();
         JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
-        String authToken = jsonObject.get("authToken").getAsString();
+        //String authToken = jsonObject.get("authToken").getAsString();
         String gameName = jsonObject.get("gameName").getAsString();
         return service.createGame(authToken, gameName);
         } catch (NullPointerException e) {
@@ -81,11 +81,11 @@ public class Handler {
         }
     }
 
-    public void joinGame(String body) throws ServiceException {
+    public void joinGame(String body, String authToken) throws ServiceException {
         try {
         var serializer = new Gson();
         JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
-        String authToken = jsonObject.get("authToken").getAsString();
+        //String authToken = jsonObject.get("authToken").getAsString();
         String playerColor = jsonObject.get("playerColor").getAsString();
         int gameID = jsonObject.get("gameID").getAsInt();
         service.joinGame(authToken, playerColor, gameID);

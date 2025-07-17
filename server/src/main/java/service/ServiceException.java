@@ -11,6 +11,7 @@ public class ServiceException extends Exception {
                 break;
             case 401:
                 message = "{ \"message\": \"Error: unauthorized\" }";
+                break;
             case 403:
                 message = "{ \"message\": \"Error: already taken\" }";
                 break;

@@ -59,7 +59,7 @@ public class Server {
         });
         Spark.delete("/session", (request, response) -> {
             try {
-                Handler.getInstance().logout(request.body());
+                Handler.getInstance().logout(request.body(), request.headers("authorization"));
                 response.status(200);
                 return "{}";
             } catch (ServiceException e) {
@@ -71,7 +71,7 @@ public class Server {
         });
         Spark.get("/game", (request, response) -> {
             try {
-                ArrayList<GameData> gameData = Handler.getInstance().listGames(request.body());
+                ArrayList<GameData> gameData = Handler.getInstance().listGames(request.body(), request.headers("authorization"));
                 response.status(200);
                 return gameData.toString();
             } catch (ServiceException e) {
@@ -83,7 +83,7 @@ public class Server {
         });
         Spark.post("/game", (request, response) -> {
            try {
-               int gameID = Handler.getInstance().createGame(request.body());
+               int gameID = Handler.getInstance().createGame(request.body(), request.headers("authorization"));
                response.status(200);
                return gameID;
            } catch (ServiceException e) {
@@ -95,7 +95,7 @@ public class Server {
         });
         Spark.put("/game", (request, response) -> {
             try {
-                Handler.getInstance().joinGame(request.body());
+                Handler.getInstance().joinGame(request.body(), request.headers("authorization"));
                 response.status(200);
                 return "{}";
             } catch (ServiceException e) {
