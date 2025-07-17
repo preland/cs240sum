@@ -9,7 +9,6 @@ import server.Server;
 public class ServiceTests {
     private static Server server;
     private static Service service;
-    private static UserData firstUser;
     private static AuthData firstAuth;
     @AfterAll
     static void fin() {server.stop();}
@@ -18,7 +17,7 @@ public class ServiceTests {
         server = new Server();
         server.run(0);
         service = Service.getInstance();
-        firstUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
+        //firstUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
         //server run is used to simulate nominal startup conditions; http connection is not used
     }
     @BeforeEach
@@ -35,7 +34,7 @@ public class ServiceTests {
     }
     @Test
     void registerPositive() {
-
+        Assertions.assertDoesNotThrow(() -> service.register("newuser", "newpassword", "asdf@asdf.org"));
     }
     @Test
     void registerNegative() {
@@ -43,7 +42,9 @@ public class ServiceTests {
     }
 
     @Test
-    void loginPositive() {
+    void loginPositive() throws ServiceException{
+        service.logout(firstAuth.authToken());
+        Assertions.assertDoesNotThrow(() -> service.login("ExistingUser", "existingUserPassword"));
     }
     @Test
     void loginNegative() {
@@ -52,6 +53,7 @@ public class ServiceTests {
 
     @Test
     void logoutPositive() {
+        Assertions.assertDoesNotThrow(() -> service.logout(firstAuth.authToken()));
     }
     @Test
     void logoutNegative() {
@@ -60,6 +62,7 @@ public class ServiceTests {
 
     @Test
     void listGamesPositive() {
+        Assertions.assertDoesNotThrow(() -> service.listGames(firstAuth.authToken()));
     }
     @Test
     void listGamesNegative() {
@@ -68,6 +71,7 @@ public class ServiceTests {
 
     @Test
     void createGamePositive() {
+        Assertions.assertDoesNotThrow(() -> service.createGame(firstAuth.authToken(), "gameName"));
     }
     @Test
     void createGameNegative() {
@@ -75,7 +79,9 @@ public class ServiceTests {
     }
 
     @Test
-    void joinGamePositive() {
+    void joinGamePositive() throws ServiceException{
+        int gameID = service.createGame(firstAuth.authToken(), "gameName");
+        Assertions.assertDoesNotThrow(() -> service.joinGame(firstAuth.authToken(), "WHITE", gameID));
     }
     @Test
     void joinGameNegative() {

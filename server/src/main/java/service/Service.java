@@ -35,9 +35,9 @@ public class Service {
         if(userData == null) {
             throw new ServiceException(401);
         }
-        if(!dataAccess.isLoggedIn(userData.username())) {
+        /*if(!dataAccess.isLoggedIn(userData.username())) {
             throw new ServiceException(401);
-        }
+        }*/
         return dataAccess.createAuth(userData);
     }
 
