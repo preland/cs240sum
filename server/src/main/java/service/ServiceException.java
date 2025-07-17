@@ -26,5 +26,10 @@ public class ServiceException extends Exception {
     public int getErrorCode() {
         return errorCode;
     }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
     //public ServiceException(String message, Throwable ex) { super(message, ex); }
 }

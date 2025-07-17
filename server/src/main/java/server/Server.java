@@ -29,7 +29,7 @@ public class Server {
                 return "{}";
             } catch (ServiceException e) {
                 response.status(e.getErrorCode());
-                return e.toString();
+                return e.getMessage();
             }
 
         });
@@ -42,7 +42,7 @@ public class Server {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
                 response.status(e.getErrorCode());
-                return e.toString();
+                return e.getMessage();
             }
         });
         Spark.post("/session", (request, response) -> {
@@ -54,7 +54,7 @@ public class Server {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
                 response.status(e.getErrorCode());
-                return e.toString();
+                return e.getMessage();
             }
         });
         Spark.delete("/session", (request, response) -> {
@@ -66,7 +66,7 @@ public class Server {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
                 response.status(e.getErrorCode());
-                return e.toString();
+                return e.getMessage();
             }
         });
         Spark.get("/game", (request, response) -> {
@@ -78,7 +78,7 @@ public class Server {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
                 response.status(e.getErrorCode());
-                return e.toString();
+                return e.getMessage();
             }
         });
         Spark.post("/game", (request, response) -> {
@@ -90,7 +90,7 @@ public class Server {
                //todo: implement proper failure modes
                //throw new RuntimeException(e);
                response.status(e.getErrorCode());
-               return e.toString();
+               return e.getMessage();
            }
         });
         Spark.put("/game", (request, response) -> {
@@ -103,7 +103,7 @@ public class Server {
                 //throw new RuntimeException(e);
                 //todo: impl proper response codes
                 response.status(e.getErrorCode());
-                return e.toString();
+                return e.getMessage();
             }
         });
         //This line initializes the server and can be removed once you have a functioning endpoint 
