@@ -8,6 +8,7 @@ import model.GameData;
 import model.UserData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Service {
     private static final Service instance = new Service();
@@ -32,8 +33,10 @@ public class Service {
     public AuthData login(String username, String password) throws ServiceException {
         UserData userData = dataAccess.getUser(username, password);
         if(userData == null) {
-            //todo: figure out how to get the other one (401)
-            throw new ServiceException(400);
+            throw new ServiceException(401);
+        }
+        if(!dataAccess.isLoggedIn(userData.username())) {
+            throw new ServiceException(401);
         }
         return dataAccess.createAuth(userData);
     }
@@ -67,6 +70,9 @@ public class Service {
             throw new ServiceException(401);
         }
         if(!dataAccess.doesGameExist(gameID)) {
+            throw new ServiceException(400);
+        }
+        if(!Objects.equals(playerColor, "WHITE") && !Objects.equals(playerColor, "BLACK")) {
             throw new ServiceException(400);
         }
         if(!dataAccess.checkForColor(gameID, playerColor)) {

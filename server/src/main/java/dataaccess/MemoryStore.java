@@ -96,4 +96,12 @@ public class MemoryStore {
 
         }
     }
+    public String getAuthToken(String username) {
+        //DANGEROUS FN
+        AuthData testData = authData.stream().filter(ad -> username.equals(ad.username())).findFirst().orElse(null);
+        if(testData == null) {
+            return null;
+        }
+        return testData.authToken();
+    }
 }

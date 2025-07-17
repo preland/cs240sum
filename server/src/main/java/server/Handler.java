@@ -8,6 +8,7 @@ import service.Service;
 import service.ServiceException;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Handler {
     private static final Handler instance = new Handler();
@@ -63,7 +64,11 @@ public class Handler {
         var serializer = new Gson();
         //JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
         //String authToken = jsonObject.get("authToken").getAsString();
-        return serializer.toJson(service.listGames(authToken));
+            String ret = serializer.toJson(service.listGames(authToken));
+            if(Objects.equals(ret, "[]")) {
+                return "{\"games\": []}";
+            }
+            return "{\"games\": " + ret + "}";
         } catch (NullPointerException e) {
             throw new ServiceException(400);
         }

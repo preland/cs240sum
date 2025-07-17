@@ -74,4 +74,8 @@ public class DataAccess {
     public void joinGame(String username, String playerColor, int gameID) {
         storage.modifyGame(gameID, username, playerColor);
     }
+    public boolean isLoggedIn(String username) {
+        //this is very terrible auth design; too bad
+        return storage.getAuthToken(username) != null;
+    }
 }
