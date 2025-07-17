@@ -28,4 +28,53 @@ public class ServiceTests {
         firstAuth = service.register("ExistingUser", "existingUserPassword", "eu@mail.com");
 
     }
+
+    @Test
+    void clearPositive() {
+    }
+    @Test
+    void clearNegative() {
+    }
+
+    @Test
+    void registerPositive() {
+    }
+    @Test
+    void registerNegative() {
+    }
+
+    @Test
+    void loginPositive() {
+    }
+    @Test
+    void loginNegative() {
+    }
+
+    @Test
+    void logoutPositive() {
+    }
+    @Test
+    void logoutNegative() {
+    }
+
+    @Test
+    void listGamesPositive() {
+    }
+    @Test
+    void listGamesNegative() {
+    }
+
+    @Test
+    void createGamePositive() {
+    }
+    @Test
+    void createGameNegative() {
+    }
+
+    @Test
+    void joinGamePositive() {
+    }
+    @Test
+    void joinGameNegative() {
+    }
 }
