@@ -58,24 +58,24 @@ public class Handler {
         }
     }
 
-    public ArrayList<GameData> listGames(String body, String authToken) throws ServiceException {
+    public String listGames(String body, String authToken) throws ServiceException {
         try {
         var serializer = new Gson();
-        JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
+        //JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
         //String authToken = jsonObject.get("authToken").getAsString();
-        return service.listGames(authToken);
+        return serializer.toJson(service.listGames(authToken));
         } catch (NullPointerException e) {
             throw new ServiceException(400);
         }
     }
 
-    public int createGame(String body, String authToken) throws ServiceException {
+    public String createGame(String body, String authToken) throws ServiceException {
         try {
         var serializer = new Gson();
         JsonObject jsonObject = serializer.fromJson(body, JsonObject.class);
         //String authToken = jsonObject.get("authToken").getAsString();
         String gameName = jsonObject.get("gameName").getAsString();
-        return service.createGame(authToken, gameName);
+        return "{ \"gameID\": " + service.createGame(authToken, gameName) + " }";
         } catch (NullPointerException e) {
             throw new ServiceException(400);
         }

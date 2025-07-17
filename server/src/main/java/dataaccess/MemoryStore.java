@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class MemoryStore {
-    private int iter = 0;
+    private int iter = 1;
     private static final MemoryStore instance = new MemoryStore();
     ArrayList<UserData> userData = new ArrayList<>();
     ArrayList<AuthData> authData = new ArrayList<>();

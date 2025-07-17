@@ -71,9 +71,9 @@ public class Server {
         });
         Spark.get("/game", (request, response) -> {
             try {
-                ArrayList<GameData> gameData = Handler.getInstance().listGames(request.body(), request.headers("authorization"));
+                String gameData = Handler.getInstance().listGames(request.body(), request.headers("authorization"));
                 response.status(200);
-                return gameData.toString();
+                return gameData;
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
@@ -83,7 +83,7 @@ public class Server {
         });
         Spark.post("/game", (request, response) -> {
            try {
-               int gameID = Handler.getInstance().createGame(request.body(), request.headers("authorization"));
+               String gameID = Handler.getInstance().createGame(request.body(), request.headers("authorization"));
                response.status(200);
                return gameID;
            } catch (ServiceException e) {
