@@ -10,12 +10,12 @@ import java.util.Objects;
 
 public class DataAccess {
     private MemoryStore storage;
-    private static final DataAccess instance = new DataAccess();
+    private static final DataAccess INSTANCE = new DataAccess();
     private DataAccess() {
         this.storage = MemoryStore.getInstance();
         //above should be trivially switchable from memory to sql
     }
-    public static DataAccess getInstance() {return instance;}
+    public static DataAccess getInstance() {return INSTANCE;}
     public void clear() {
         //get static reference to memorystore and use it to run function
         storage.clear();
@@ -73,9 +73,5 @@ public class DataAccess {
 
     public void joinGame(String username, String playerColor, int gameID) {
         storage.modifyGame(gameID, username, playerColor);
-    }
-    public boolean isLoggedIn(String username) {
-        //this is very terrible auth design; too bad
-        return storage.getAuthToken(username) != null;
     }
 }

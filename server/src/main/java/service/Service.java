@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Service {
-    private static final Service instance = new Service();
+    private static final Service INSTANCE = new Service();
     private static DataAccess dataAccess;
     private Service() {
         dataAccess = DataAccess.getInstance();
     }
-    public static Service getInstance() {return instance; }
+    public static Service getInstance() {return INSTANCE; }
     public void clear() throws ServiceException {
         //call dataaccess thingy to delete everything
         dataAccess.clear();
@@ -35,9 +35,6 @@ public class Service {
         if(userData == null) {
             throw new ServiceException(401);
         }
-        /*if(!dataAccess.isLoggedIn(userData.username())) {
-            throw new ServiceException(401);
-        }*/
         return dataAccess.createAuth(userData);
     }
 

@@ -11,12 +11,12 @@ import java.util.UUID;
 
 public class MemoryStore {
     private int iter = 1;
-    private static final MemoryStore instance = new MemoryStore();
+    private static final MemoryStore INSTANCE = new MemoryStore();
     ArrayList<UserData> userData = new ArrayList<>();
     ArrayList<AuthData> authData = new ArrayList<>();
     ArrayList<GameData> gameData = new ArrayList<>();
     private MemoryStore() {}
-    public static MemoryStore getInstance() { return instance; }
+    public static MemoryStore getInstance() { return INSTANCE; }
     public void clear() {
         userData.clear();
         authData.clear();
@@ -95,13 +95,5 @@ public class MemoryStore {
             gameData.set(index, new GameData(gameID, whiteUsername, username, gameName, chessGame));
 
         }
-    }
-    public String getAuthToken(String username) {
-        //DANGEROUS FN
-        AuthData testData = authData.stream().filter(ad -> username.equals(ad.username())).findFirst().orElse(null);
-        if(testData == null) {
-            return null;
-        }
-        return testData.authToken();
     }
 }

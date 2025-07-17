@@ -38,7 +38,8 @@ public class ServiceTests {
     }
     @Test
     void registerNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> service.register("ExistingUser", "existingUserPassword", "eu@mail.com"), "{ \"message\": \"Error: already taken\" }");
+        Assertions.assertThrowsExactly(ServiceException.class, () ->
+                service.register("ExistingUser", "existingUserPassword", "eu@mail.com"), "{ \"message\": \"Error: already taken\" }");
     }
 
     @Test
@@ -48,7 +49,8 @@ public class ServiceTests {
     }
     @Test
     void loginNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> service.login("ExistingUser","notit"), "{ \"message\": \"Error: bad request\" }");
+        Assertions.assertThrowsExactly(ServiceException.class, () ->
+                service.login("ExistingUser","notit"), "{ \"message\": \"Error: bad request\" }");
     }
 
     @Test
@@ -75,7 +77,8 @@ public class ServiceTests {
     }
     @Test
     void createGameNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> service.createGame("nottehtoken", "doesntmatter"), "{ \"message\": \"Error: unauthorized\" }");
+        Assertions.assertThrowsExactly(ServiceException.class, () ->
+                service.createGame("nottehtoken", "doesntmatter"), "{ \"message\": \"Error: unauthorized\" }");
     }
 
     @Test
@@ -85,6 +88,7 @@ public class ServiceTests {
     }
     @Test
     void joinGameNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> service.joinGame("nottoken", "asdf", -1), "{ \"message\": \"Error: unauthorized\" }");
+        Assertions.assertThrowsExactly(ServiceException.class, () ->
+                service.joinGame("nottoken", "asdf", -1), "{ \"message\": \"Error: unauthorized\" }");
     }
 }

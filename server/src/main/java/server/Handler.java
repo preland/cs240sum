@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Handler {
-    private static final Handler instance = new Handler();
+    private static final Handler INSTANCE = new Handler();
     private static Service service;
     private Handler() {
         service = Service.getInstance();
     }
-    public static Handler getInstance() {return instance; }
+    public static Handler getInstance() {return INSTANCE; }
     public void clear() throws ServiceException {
         //call dataaccess thingy to delete everything
         service.clear();
