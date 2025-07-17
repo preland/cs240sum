@@ -22,9 +22,9 @@ public class Service {
     }
     public AuthData register(String username, String password, String email) throws ServiceException {
         if(dataAccess.getUser(username, password) != null) {
-            throw new ServiceException("already taken");
+            throw new ServiceException(403);
         }
-        //todo: error handling for userData stuffs
+        //todo: 400 error handling
         UserData userData = dataAccess.createUser(username, password, email);
         return dataAccess.createAuth(userData);
     }
@@ -32,22 +32,22 @@ public class Service {
     public AuthData login(String username, String password) throws ServiceException {
         UserData userData = dataAccess.getUser(username, password);
         if(userData == null) {
-            //todo: figure out how to get the other one
-            throw new ServiceException("user doesn't exist");
+            //todo: figure out how to get the other one (401)
+            throw new ServiceException(400);
         }
         return dataAccess.createAuth(userData);
     }
 
     public void logout(String authToken) throws ServiceException {
         if(!dataAccess.deleteAuth(authToken)) {
-            throw new ServiceException("unauthorized");
+            throw new ServiceException(401);
         }
     }
 
     public ArrayList<GameData> listGames(String authToken) throws ServiceException {
         String username = dataAccess.getUsername(authToken);
         if(username == null) {
-            throw new ServiceException("unauthorized");
+            throw new ServiceException(401);
         }
         return dataAccess.listGames();
     }
@@ -55,21 +55,22 @@ public class Service {
     public int createGame(String authToken, String gameName) throws ServiceException {
         String username = dataAccess.getUsername(authToken);
         if(username == null) {
-            throw new ServiceException("unauthorized");
+            throw new ServiceException(401);
         }
+        //todo: implement 400 code
         return dataAccess.createGame(gameName).gameID();
     }
 
     public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
         String username = dataAccess.getUsername(authToken);
         if(username == null) {
-            throw new ServiceException("unauthorized");
+            throw new ServiceException(401);
         }
         if(!dataAccess.doesGameExist(gameID)) {
-            throw new ServiceException("bad request");
+            throw new ServiceException(400);
         }
         if(!dataAccess.checkForColor(gameID, playerColor)) {
-            throw new ServiceException("already taken");
+            throw new ServiceException(403);
         }
         dataAccess.joinGame(username, playerColor, gameID);
     }

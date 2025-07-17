@@ -28,7 +28,7 @@ public class Server {
                 //throw new ServiceException("error go away pls");
                 return "{}";
             } catch (ServiceException e) {
-                response.status(500);
+                response.status(e.getErrorCode());
                 return e.toString();
             }
 
@@ -41,7 +41,7 @@ public class Server {
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
-                response.status(403);
+                response.status(e.getErrorCode());
                 return e.toString();
             }
         });
@@ -53,7 +53,7 @@ public class Server {
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
-                response.status(400);
+                response.status(e.getErrorCode());
                 return e.toString();
             }
         });
@@ -65,7 +65,7 @@ public class Server {
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
-                response.status(401);
+                response.status(e.getErrorCode());
                 return e.toString();
             }
         });
@@ -77,7 +77,7 @@ public class Server {
             } catch (ServiceException e) {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
-                response.status(401);
+                response.status(e.getErrorCode());
                 return e.toString();
             }
         });
@@ -89,7 +89,7 @@ public class Server {
            } catch (ServiceException e) {
                //todo: implement proper failure modes
                //throw new RuntimeException(e);
-               response.status(401);
+               response.status(e.getErrorCode());
                return e.toString();
            }
         });
@@ -102,7 +102,7 @@ public class Server {
                 //todo: implement proper failure modes
                 //throw new RuntimeException(e);
                 //todo: impl proper response codes
-                response.status(400);
+                response.status(e.getErrorCode());
                 return e.toString();
             }
         });
