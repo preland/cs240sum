@@ -83,9 +83,12 @@ public class DatabaseStore {
     }
 
     public boolean deleteAuth(String authToken) {
-        var statement = "do stuff here";
+        var statement = """
+                DELETE FROM auth WHERE authToken=?""";
         try(var conn = DatabaseManager.getConnection()) {
-
+            var update = conn.prepareStatement(statement);
+            update.setString(1, authToken);
+            update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
@@ -93,9 +96,13 @@ public class DatabaseStore {
     }
 
     public String getUsername(String authToken) {
-        var statement = "do stuff here";
+        var statement = """
+                SELECT username FROM auth WHERE authToken=?""";
         try(var conn = DatabaseManager.getConnection()) {
-
+            var query = conn.prepareStatement(statement);
+            query.setString(1, authToken);
+            var result = query.executeQuery();
+            return result.getString("username");
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
