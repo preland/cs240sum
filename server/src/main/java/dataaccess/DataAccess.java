@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class DataAccess {
-    private MemoryStore storage;
+    private DatabaseStore storage;
     private static final DataAccess INSTANCE = new DataAccess();
     private DataAccess() {
-        this.storage = MemoryStore.getInstance();
+        this.storage = DatabaseStore.getInstance();
         //above should be trivially switchable from memory to sql
     }
     public static DataAccess getInstance() {return INSTANCE;}
