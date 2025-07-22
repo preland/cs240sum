@@ -49,22 +49,33 @@ public class DatabaseStore {
     }
 
     public UserData createUser(String username, String password, String email) {
-        var statement = "do stuff here";
+        var statement = """
+                INSERT into user (username, password, email) VALUES(?,?,?)
+                """;
         try(var conn = DatabaseManager.getConnection()) {
-
+            var update = conn.prepareStatement(statement);
+            update.setString(1, username);
+            update.setString(2, password);
+            update.setString(3, email);
+            update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
-        return new UserData("a","a","a");
+        return new UserData(username,password,email);
     }
     public AuthData createAuth(String username, String password) {
-        var statement = "do stuff here";
+        var statement = """
+                INSERT into auth (authToken, username) VALUES(?,?)""";
+        String token = generateToken();
         try(var conn = DatabaseManager.getConnection()) {
-
+            var update = conn.prepareStatement(statement);
+            update.setString(1, token);
+            update.setString(2, username);
+            update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
-        return new AuthData("a","a");
+        return new AuthData(token,username);
     }
 
     private String generateToken() {
