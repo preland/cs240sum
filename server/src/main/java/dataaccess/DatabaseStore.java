@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -110,9 +111,20 @@ public class DatabaseStore {
     }
 
     public ArrayList<GameData> listGames() {
-        var statement = "do stuff here";
+        var statement = "SELECT * FROM game";
+        ArrayList<GameData> ret = new ArrayList<>();
         try(var conn = DatabaseManager.getConnection()) {
+            var query = conn.prepareStatement(statement);
+            var result = query.executeQuery();
 
+            while(result.next()) {
+                int gameID = result.getInt("gameID");
+                String whiteUsername = result.getString("whiteUsername");
+                String blackUsername = result.getString("blackUsername");
+                String gameName = result.getString("gameName");
+                ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
+                ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+            }
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
