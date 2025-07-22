@@ -21,6 +21,16 @@ public class DatabaseManager {
      */
     static public void createDatabase() throws DataAccessException {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
+        var gameTable = """
+                CREATE TABLE IF NOT EXISTS game(
+                `gameID` int NOT NULL AUTO_INCREMENT,
+                `whiteUsername` VARCHAR(256) DEFAULT NULL,
+                `blackUsername` VARCHAR(256) DEFAULT NULL,
+                `gameName` VARCHAR(256) NOT NULL,
+                `game` TEXT DEFAULT NULL,
+                PRIMARY KEY (`gameID`)
+                )
+                """;
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
