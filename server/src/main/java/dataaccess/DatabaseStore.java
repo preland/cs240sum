@@ -19,18 +19,29 @@ public class DatabaseStore {
     private DatabaseStore() {}
     public static DatabaseStore getInstance() { return INSTANCE; }
     public void clear() {
-        var statement = "do stuff here";
+        var statement = """
+                TRUNCATE user
+                TRUNCATE auth
+                TRUNCATE game
+                """;
         try(var conn = DatabaseManager.getConnection()) {
-
+            conn.prepareStatement(statement).executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
     }
 
     public UserData getUser(String username, String password) {
-        var statement = "do stuff here";
+        var statement = """
+                SELECT username, password, email 
+                FROM user 
+                WHERE username=?
+                """;
         try(var conn = DatabaseManager.getConnection()) {
-
+            var query = conn.prepareStatement(statement);
+            query.setString(1, username);
+            var result = query.executeQuery();
+            return new UserData(result.getString("username"), result.getString("username"), result.getString("username"));
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
