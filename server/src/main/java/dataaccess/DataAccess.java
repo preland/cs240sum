@@ -4,6 +4,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
+import service.ServiceException;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -11,7 +12,13 @@ import java.util.Objects;
 public class DataAccess {
     private DatabaseStore storage;
     private static final DataAccess INSTANCE = new DataAccess();
-    private DataAccess() {
+    private DataAccess(){
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            //throw new ServiceException(500);
+            throw new RuntimeException("createDatabase failed; time to stop");
+        }
         this.storage = DatabaseStore.getInstance();
         //above should be trivially switchable from memory to sql
     }

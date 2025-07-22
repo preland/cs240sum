@@ -34,6 +34,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return new UserData("a","a","a");
     }
 
     public UserData createUser(String username, String password, String email) {
@@ -43,6 +44,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return new UserData("a","a","a");
     }
     public AuthData createAuth(String username, String password) {
         var statement = "do stuff here";
@@ -51,6 +53,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return new AuthData("a","a");
     }
 
     private String generateToken() {
@@ -64,6 +67,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return true;
     }
 
     public String getUsername(String authToken) {
@@ -73,6 +77,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return "a";
     }
 
     public ArrayList<GameData> listGames() {
@@ -82,6 +87,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return new ArrayList<>();
     }
 
     public GameData createGame(String gameName) {
@@ -91,6 +97,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return new GameData(0,"","","", new ChessGame());
     }
 
     public GameData getGame(int gameID) {
@@ -100,6 +107,7 @@ public class DatabaseStore {
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
+        return new GameData(0,"","","", new ChessGame());
     }
 
     public void modifyGame(int gameID, String username, String playerColor) {
