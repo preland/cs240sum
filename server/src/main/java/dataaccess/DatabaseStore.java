@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
+import service.ServiceException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class DatabaseStore {
     //ArrayList<GameData> gameData = new ArrayList<>();
     private DatabaseStore() {}
     public static DatabaseStore getInstance() { return INSTANCE; }
-    public void clear() {
+    public void clear() throws ServiceException{
         var statement = "TRUNCATE TABLE ";
         try(var conn = DatabaseManager.getConnection()) {
             var update = conn.prepareStatement(statement+"auth");
@@ -30,11 +31,11 @@ public class DatabaseStore {
             update = conn.prepareStatement(statement+"game");
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
     }
 
-    public UserData getUser(String username, String password) {
+    public UserData getUser(String username, String password) throws ServiceException{
         var statement = """
                 SELECT username, passwordHash, email 
                 FROM user 
@@ -53,12 +54,12 @@ public class DatabaseStore {
             return new UserData(result.getString("username"), result.getString("passwordHash"), result.getString("email"));
         } catch(DataAccessException | SQLException e) {
             //do something here!
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         //return new UserData("a","a","a");
     }
 
-    public UserData createUser(String username, String password, String email) {
+    public UserData createUser(String username, String password, String email) throws ServiceException{
         var statement = """
                 INSERT into user (username, passwordHash, email) VALUES(?,?,?)
                 """;
@@ -71,11 +72,11 @@ public class DatabaseStore {
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         return new UserData(username,password,email);
     }
-    public AuthData createAuth(String username, String password) {
+    public AuthData createAuth(String username, String password) throws ServiceException{
         var statement = """
                 INSERT into auth (authToken, username) VALUES(?,?)""";
         String token = generateToken();
@@ -85,7 +86,7 @@ public class DatabaseStore {
             update.setString(2, username);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         return new AuthData(token,username);
     }
@@ -94,7 +95,7 @@ public class DatabaseStore {
         return UUID.randomUUID().toString();
     }
 
-    public boolean deleteAuth(String authToken) {
+    public boolean deleteAuth(String authToken) throws ServiceException{
         var statement = """
                 DELETE FROM auth WHERE authToken=?""";
         try(var conn = DatabaseManager.getConnection()) {
@@ -102,12 +103,12 @@ public class DatabaseStore {
             update.setString(1, authToken);
             return update.executeUpdate() != 0;
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         //return true; //todo: fix
     }
 
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws ServiceException{
         var statement = """
                 SELECT username FROM auth WHERE authToken=?""";
         try(var conn = DatabaseManager.getConnection()) {
@@ -119,12 +120,12 @@ public class DatabaseStore {
             }
             return result.getString("username");
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         //return "a";
     }
 
-    public ArrayList<GameData> listGames() {
+    public ArrayList<GameData> listGames() throws ServiceException{
         var statement = "SELECT * FROM game";
         ArrayList<GameData> ret = new ArrayList<>();
         try(var conn = DatabaseManager.getConnection()) {
@@ -143,12 +144,12 @@ public class DatabaseStore {
             }
             return ret;
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         //return new ArrayList<>();
     }
 
-    public GameData createGame(String gameName) {
+    public GameData createGame(String gameName) throws ServiceException{
         var statement = "INSERT INTO game (whiteUsername,blackUsername,gameName,game) VALUES(?,?,?,?)";
         try(var conn = DatabaseManager.getConnection()) {
             var update = conn.prepareStatement(statement);
@@ -160,10 +161,10 @@ public class DatabaseStore {
             return getGame(gameName);
             //return new GameData(0,"","","", new ChessGame());
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
     }
-    public GameData getGame(String gameName) {
+    public GameData getGame(String gameName) throws ServiceException{
         var statement = """
                 SELECT gameID,whiteUsername,blackUsername,gameName,game 
                 FROM game 
@@ -182,11 +183,11 @@ public class DatabaseStore {
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
             return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         //return new GameData(0,"","","", new ChessGame());
     }
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws ServiceException{
         var statement = """
                 SELECT gameID,whiteUsername,blackUsername,gameName,game 
                 FROM game 
@@ -205,12 +206,12 @@ public class DatabaseStore {
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
             return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException(500);
         }
         //return new GameData(0,"","","", new ChessGame());
     }
 
-    public void modifyGame(int gameID, String username, String playerColor) {
+    public void modifyGame(int gameID, String username, String playerColor) throws ServiceException{
         var statement1 = "UPDATE game SET ";
         var statement3 = "=? WHERE gameID=?";
         var statement2 = "";

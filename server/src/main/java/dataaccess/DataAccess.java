@@ -23,25 +23,25 @@ public class DataAccess {
         //above should be trivially switchable from memory to sql
     }
     public static DataAccess getInstance() {return INSTANCE;}
-    public void clear() {
+    public void clear() throws ServiceException{
         //get static reference to memorystore and use it to run function
         storage.clear();
     }
 
-    public UserData getUser(String username, String password) {
+    public UserData getUser(String username, String password) throws ServiceException{
         //todo:actually implement
         //return new UserData(username, password, "testos");
         return storage.getUser(username, password);
 
     }
 
-    public UserData createUser(String username, String password, String email) {
+    public UserData createUser(String username, String password, String email) throws ServiceException{
         //todo:actually implement
         //return new UserData(username, password, email);
         return storage.createUser(username, password, email);
     }
 
-    public AuthData createAuth(UserData userData) {
+    public AuthData createAuth(UserData userData) throws ServiceException{
         //todo:actually implement
         //return "{}";
         String username = userData.username();
@@ -49,27 +49,27 @@ public class DataAccess {
         return storage.createAuth(username, password);
     }
 
-    public boolean deleteAuth(String authToken) {
+    public boolean deleteAuth(String authToken) throws ServiceException{
         return storage.deleteAuth(authToken);
     }
 
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws ServiceException{
         return storage.getUsername(authToken);
     }
 
-    public ArrayList<GameData> listGames() {
+    public ArrayList<GameData> listGames() throws ServiceException{
         return storage.listGames();
     }
 
-    public GameData createGame(String gameName) {
+    public GameData createGame(String gameName) throws ServiceException{
         return storage.createGame(gameName);
     }
 
-    public boolean doesGameExist(int gameID) {
+    public boolean doesGameExist(int gameID) throws ServiceException{
         return storage.getGame(gameID) != null;
     }
 
-    public boolean checkForColor(int gameID, String playerColor) {
+    public boolean checkForColor(int gameID, String playerColor) throws ServiceException {
         if(Objects.equals(playerColor, "WHITE")) {
             return storage.getGame(gameID).whiteUsername() == null;
         }
@@ -78,7 +78,7 @@ public class DataAccess {
         }
     }
 
-    public void joinGame(String username, String playerColor, int gameID) {
+    public void joinGame(String username, String playerColor, int gameID) throws ServiceException {
         storage.modifyGame(gameID, username, playerColor);
     }
 }
