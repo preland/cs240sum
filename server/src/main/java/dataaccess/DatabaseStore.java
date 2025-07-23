@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class DatabaseStore {
-    private int iter = 1;
+    //private int iter = 1;
     private static final DatabaseStore INSTANCE = new DatabaseStore();
     //ArrayList<UserData> userData = new ArrayList<>();
     //ArrayList<AuthData> authData = new ArrayList<>();
@@ -183,19 +183,19 @@ public class DatabaseStore {
     }
 
     public void modifyGame(int gameID, String username, String playerColor) {
-        var statement = """
-                UPDATE game SET ?=?
-                WHERE gameID=?""";
-
+        var statement1 = "UPDATE game SET ";
+        var statement3 = "=? WHERE gameID=?";
+        var statement2 = "";
+        if(playerColor.equals("WHITE")) {
+            statement2 = "whiteUsername";
+        } else {
+            statement2 = "blackUsername";
+        }
         try(var conn = DatabaseManager.getConnection()) {
-            var update = conn.prepareStatement(statement);
-            if(playerColor.equals("WHITE")) {
-                update.setString(1, "whiteUsername");
-            } else {
-                update.setString(1, "blackUsername");
-            }
-            update.setString(2, username);
-            update.setInt(3, gameID);
+            var update = conn.prepareStatement(statement1+statement2+statement3);
+
+            update.setString(1, username);
+            update.setInt(2, gameID+1);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             throw new RuntimeException(e);
