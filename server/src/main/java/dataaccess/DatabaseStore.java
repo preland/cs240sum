@@ -20,21 +20,23 @@ public class DatabaseStore {
     private DatabaseStore() {}
     public static DatabaseStore getInstance() { return INSTANCE; }
     public void clear() {
-        var statement = """
-                TRUNCATE user
-                TRUNCATE auth
-                TRUNCATE game
-                """;
+        var statement = "TRUNCATE TABLE auth";
         try(var conn = DatabaseManager.getConnection()) {
-            conn.prepareStatement(statement).executeUpdate();
+            var update = conn.prepareStatement(statement);
+            //update.setString(1, "auth");
+            update.executeUpdate();
+            /*update.setString(1, "user");
+            update.executeUpdate();
+            update.setString(1, "game");
+            update.executeUpdate();*/
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
     }
 
     public UserData getUser(String username, String password) {
         var statement = """
-                SELECT username, password, email 
+                SELECT username, passwordHash, email 
                 FROM user 
                 WHERE username=?
                 """;
@@ -42,16 +44,20 @@ public class DatabaseStore {
             var query = conn.prepareStatement(statement);
             query.setString(1, username);
             var result = query.executeQuery();
-            return new UserData(result.getString("username"), result.getString("username"), result.getString("username"));
+            if(!result.next()){
+                return null;
+            }
+            return new UserData(result.getString("username"), result.getString("passwordHash"), result.getString("email"));
         } catch(DataAccessException | SQLException e) {
             //do something here!
+            throw new RuntimeException(e);
         }
-        return new UserData("a","a","a");
+        //return new UserData("a","a","a");
     }
 
     public UserData createUser(String username, String password, String email) {
         var statement = """
-                INSERT into user (username, password, email) VALUES(?,?,?)
+                INSERT into user (username, passwordHash, email) VALUES(?,?,?)
                 """;
         try(var conn = DatabaseManager.getConnection()) {
             var update = conn.prepareStatement(statement);
@@ -61,6 +67,7 @@ public class DatabaseStore {
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
+            throw new RuntimeException(e);
         }
         return new UserData(username,password,email);
     }
@@ -74,7 +81,7 @@ public class DatabaseStore {
             update.setString(2, username);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
         return new AuthData(token,username);
     }
@@ -91,9 +98,9 @@ public class DatabaseStore {
             update.setString(1, authToken);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
-        return true;
+        return true; //todo: fix
     }
 
     public String getUsername(String authToken) {
@@ -105,9 +112,9 @@ public class DatabaseStore {
             var result = query.executeQuery();
             return result.getString("username");
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
-        return "a";
+        //return "a";
     }
 
     public ArrayList<GameData> listGames() {
@@ -125,10 +132,11 @@ public class DatabaseStore {
                 ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
                 ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
             }
+            return ret;
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
-        return new ArrayList<>();
+        //return new ArrayList<>();
     }
 
     public GameData createGame(String gameName) {
@@ -139,10 +147,10 @@ public class DatabaseStore {
             update.setString(2, null);
             update.setString(3, gameName);
             update.setString(4, new Gson().toJson(new ChessGame(), ChessGame.class));
+            return new GameData(0,"","","", new ChessGame());
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
-        return new GameData(0,"","","", new ChessGame());
     }
 
     public GameData getGame(int gameID) {
@@ -155,15 +163,16 @@ public class DatabaseStore {
             var query = conn.prepareStatement(statement);
             query.setInt(1,gameID);
             var result = query.executeQuery();
+
             String whiteUsername = result.getString("whiteUsername");
             String blackUsername = result.getString("blackUsername");
             String gameName = result.getString("gameName");
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
             return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
-        return new GameData(0,"","","", new ChessGame());
+        //return new GameData(0,"","","", new ChessGame());
     }
 
     public void modifyGame(int gameID, String username, String playerColor) {
@@ -182,7 +191,7 @@ public class DatabaseStore {
             update.setInt(3, gameID);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            //do something here!
+            throw new RuntimeException(e);
         }
     }
 }
