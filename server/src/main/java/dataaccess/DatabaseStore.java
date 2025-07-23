@@ -132,9 +132,13 @@ public class DatabaseStore {
     }
 
     public GameData createGame(String gameName) {
-        var statement = "do stuff here";
+        var statement = "INSERT INTO game (whiteUsername,blackUsername,gameName,game) VALUES(?,?,?,?)";
         try(var conn = DatabaseManager.getConnection()) {
-
+            var update = conn.prepareStatement(statement);
+            update.setString(1, null);
+            update.setString(2, null);
+            update.setString(3, gameName);
+            update.setString(4, new Gson().toJson(new ChessGame(), ChessGame.class));
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
@@ -142,9 +146,20 @@ public class DatabaseStore {
     }
 
     public GameData getGame(int gameID) {
-        var statement = "do stuff here";
+        var statement = """
+                SELECT gameID,whiteUsername,blackUsername,gameName,game 
+                FROM game 
+                WHERE gameID=?
+                """;
         try(var conn = DatabaseManager.getConnection()) {
-
+            var query = conn.prepareStatement(statement);
+            query.setInt(1,gameID);
+            var result = query.executeQuery();
+            String whiteUsername = result.getString("whiteUsername");
+            String blackUsername = result.getString("blackUsername");
+            String gameName = result.getString("gameName");
+            ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
+            return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
