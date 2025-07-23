@@ -22,14 +22,14 @@ public class DatabaseManager {
     static public void createDatabase() throws DataAccessException {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
         var gameTable = """
-                CREATE TABLE IF NOT EXISTS game(
+                CREATE TABLE IF NOT EXISTS game (
                 `gameID` int NOT NULL AUTO_INCREMENT,
                 `whiteUsername` VARCHAR(256) DEFAULT NULL,
                 `blackUsername` VARCHAR(256) DEFAULT NULL,
                 `gameName` VARCHAR(256) NOT NULL,
                 `game` TEXT DEFAULT NULL,
                 PRIMARY KEY (`gameID`)
-                )
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                 """;
         var userTable = """
                 CREATE TABLE IF NOT EXISTS user(
@@ -37,18 +37,23 @@ public class DatabaseManager {
                 `passwordHash` varchar(256) NOT NULL,
                 `email` varchar(256) NOT NULL,
                 PRIMARY KEY(`username`)
-                )
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                 """;
         var authTable = """
                 CREATE TABLE IF NOT EXISTS auth(
                 `username` varchar(256) NOT NULL,
                 `authToken` varchar(256) NOT NULL,
                 PRIMARY KEY(`authToken`)
-                )
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                 """;
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
+        try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
+
+            conn.prepareStatement(gameTable).executeUpdate();
+            conn.prepareStatement(userTable).executeUpdate();
+            conn.prepareStatement(authTable).executeUpdate();
+
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }

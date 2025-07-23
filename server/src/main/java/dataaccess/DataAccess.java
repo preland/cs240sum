@@ -17,7 +17,7 @@ public class DataAccess {
             DatabaseManager.createDatabase();
         } catch (DataAccessException e) {
             //throw new ServiceException(500);
-            throw new RuntimeException("createDatabase failed; time to stop");
+            throw new RuntimeException("createDatabase failed; time to stop" + e.getMessage());
         }
         this.storage = DatabaseStore.getInstance();
         //above should be trivially switchable from memory to sql
