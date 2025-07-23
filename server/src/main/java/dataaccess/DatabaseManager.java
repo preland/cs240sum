@@ -46,14 +46,16 @@ public class DatabaseManager {
                 PRIMARY KEY(`authToken`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                 """;
-        try (var conn = DatabaseManager.getConnection();
+        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
-
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to create database", ex);
+        }
+        try (var conn = DatabaseManager.getConnection()) {
             conn.prepareStatement(gameTable).executeUpdate();
             conn.prepareStatement(userTable).executeUpdate();
             conn.prepareStatement(authTable).executeUpdate();
-
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }
