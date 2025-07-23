@@ -16,9 +16,6 @@ import java.util.UUID;
 public class DatabaseStore {
     //private int iter = 1;
     private static final DatabaseStore INSTANCE = new DatabaseStore();
-    //ArrayList<UserData> userData = new ArrayList<>();
-    //ArrayList<AuthData> authData = new ArrayList<>();
-    //ArrayList<GameData> gameData = new ArrayList<>();
     private DatabaseStore() {}
     public static DatabaseStore getInstance() { return INSTANCE; }
     public void clear() throws ServiceException{
@@ -131,9 +128,6 @@ public class DatabaseStore {
         try(var conn = DatabaseManager.getConnection()) {
             var query = conn.prepareStatement(statement);
             var result = query.executeQuery();
-            /*if(!result.next()){
-                return null;
-            }*/
             while(result.next()) {
                 int gameID = result.getInt("gameID");
                 String whiteUsername = result.getString("whiteUsername");
