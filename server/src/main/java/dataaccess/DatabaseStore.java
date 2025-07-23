@@ -28,7 +28,7 @@ public class DatabaseStore {
             update = conn.prepareStatement(statement+"game");
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
     }
 
@@ -51,7 +51,7 @@ public class DatabaseStore {
             return new UserData(result.getString("username"), result.getString("passwordHash"), result.getString("email"));
         } catch(DataAccessException | SQLException e) {
             //do something here!
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         //return new UserData("a","a","a");
     }
@@ -69,7 +69,7 @@ public class DatabaseStore {
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         return new UserData(username,password,email);
     }
@@ -83,7 +83,7 @@ public class DatabaseStore {
             update.setString(2, username);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         return new AuthData(token,username);
     }
@@ -100,7 +100,7 @@ public class DatabaseStore {
             update.setString(1, authToken);
             return update.executeUpdate() != 0;
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         //return true; //todo: fix
     }
@@ -117,7 +117,7 @@ public class DatabaseStore {
             }
             return result.getString("username");
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         //return "a";
     }
@@ -138,7 +138,7 @@ public class DatabaseStore {
             }
             return ret;
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         //return new ArrayList<>();
     }
@@ -155,7 +155,7 @@ public class DatabaseStore {
             return getGame(gameName);
             //return new GameData(0,"","","", new ChessGame());
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
     }
     public GameData getGame(String gameName) throws ServiceException{
@@ -177,7 +177,7 @@ public class DatabaseStore {
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
             return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         //return new GameData(0,"","","", new ChessGame());
     }
@@ -200,7 +200,7 @@ public class DatabaseStore {
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
             return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
-            throw new ServiceException(500);
+            throw new ServiceException(500, e.getMessage());
         }
         //return new GameData(0,"","","", new ChessGame());
     }

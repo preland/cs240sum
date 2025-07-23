@@ -4,6 +4,9 @@ public class ServiceException extends Exception {
     private final int errorCode;
     private final String message;
     public ServiceException(int errorCode) {
+        this(errorCode, "");
+    }
+    public ServiceException(int errorCode, String error) {
         String message = "";
         switch(errorCode) {
             case 400:
@@ -15,6 +18,8 @@ public class ServiceException extends Exception {
             case 403:
                 message = "{ \"message\": \"Error: already taken\" }";
                 break;
+            case 500:
+                message = "{ \"message\": \"Error: " +error+ "\" }";
             default:
                 message = "{ \"message\": \"Error: unknown\" }";
                 break;
