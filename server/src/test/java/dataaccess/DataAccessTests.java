@@ -1,21 +1,22 @@
 package dataaccess;
 
+import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.ServiceException;
 
 public class DataAccessTests {
     private static DataAccess da;
-    private String password;
+    private static AuthData authData;
     @BeforeEach
-    public void init(){
+    public void init() throws ServiceException {
         da = DataAccess.getInstance();
+        authData = da.createAuth(da.createUser("username", "password", "email"));
     }
     @AfterEach
     public void fin() throws ServiceException {
         da.clear();
-        UserData userData = da.createUser("username", "password", "email");
-        password = userData.password();
     }
     @Test
     public void clear() {
@@ -41,81 +42,85 @@ public class DataAccessTests {
 
     @Test
     void createAuthPositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+        Assertions.assertDoesNotThrow(() -> da.createAuth(new UserData("username", "password", "email")));
     }
     @Test
     void createAuthNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
-
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.createAuth(new UserData("username", "wrongPassword", "email")));
     }
 
     @Test
     void deleteAuthPositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+        Assertions.assertDoesNotThrow(() -> da.deleteAuth(authData.authToken()));
     }
     @Test
     void deleteAuthNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.deleteAuth("fakeAuthToken"));
 
     }
 
     @Test
     void getUsernamePositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+        Assertions.assertDoesNotThrow(() -> da.getUsername(authData.authToken()));
     }
     @Test
     void getUsernameNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
-
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUsername("falseToken"));
     }
 
     @Test
-    void listGamesPositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+    void listGamesPositive() throws ServiceException {
+        da.createGame("testGame");
+        Assertions.assertDoesNotThrow(() -> da.listGames());
     }
     @Test
-    void listGamesNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
-
+    void listGamesNegative() throws ServiceException {
+        Assertions.assertTrue(da.listGames().isEmpty());
     }
 
     @Test
     void createGamePositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+        Assertions.assertDoesNotThrow(() -> da.createGame("testGame"));
     }
     @Test
-    void createGameNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
-
-    }
-
-    @Test
-    void doesGameExistPositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
-    }
-    @Test
-    void doesGameExistNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
-
+    void createGameNegative() throws ServiceException {
+        Assertions.assertNotEquals(null, da.createGame("testGame"));
     }
 
     @Test
-    void checkForColorPositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+    void doesGameExistPositive() throws ServiceException {
+        int gameID = da.createGame("testGame").gameID();
+        Assertions.assertTrue(da.doesGameExist(gameID));
     }
     @Test
-    void checkForColorNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+    void doesGameExistNegative() throws ServiceException {
+        Assertions.assertFalse(da.doesGameExist(1));
+    }
 
+    @Test
+    void checkForColorPositive() throws ServiceException {
+        int gameID = da.createGame("testGame").gameID();
+        da.joinGame("username", "WHITE", gameID);
+        Assertions.assertTrue(da.checkForColor(gameID, "WHITE"));
+    }
+    @Test
+    void checkForColorNegative() throws ServiceException {
+        int gameID = da.createGame("testGame").gameID();
+        da.joinGame("username", "BLACK", gameID);
+        Assertions.assertFalse(da.checkForColor(gameID, "WHITE"));
     }
 
     @Test
-    void joinGamePositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+    void joinGamePositive() throws ServiceException {
+        int gameID = da.createGame("testGame").gameID();
+        Assertions.assertDoesNotThrow(() -> da.joinGame("username", "WHITE", gameID));
     }
     @Test
-    void joinGameNegative() {
-        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+    void joinGameNegative() throws ServiceException {
+        int gameID = da.createGame("testGame").gameID();
+        da.joinGame("username", "WHITE", gameID);
+        String username2 = da.createUser("user2", "password", "email").username();
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.joinGame(username2, "WHITE", gameID));
     }
 
 }
