@@ -167,9 +167,20 @@ public class DatabaseStore {
     }
 
     public void modifyGame(int gameID, String username, String playerColor) {
-        var statement = "do stuff here";
-        try(var conn = DatabaseManager.getConnection()) {
+        var statement = """
+                UPDATE game SET ?=?
+                WHERE gameID=?""";
 
+        try(var conn = DatabaseManager.getConnection()) {
+            var update = conn.prepareStatement(statement);
+            if(playerColor.equals("WHITE")) {
+                update.setString(1, "whiteUsername");
+            } else {
+                update.setString(1, "blackUsername");
+            }
+            update.setString(2, username);
+            update.setInt(3, gameID);
+            update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             //do something here!
         }
