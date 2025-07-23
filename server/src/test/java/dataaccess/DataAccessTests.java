@@ -27,14 +27,16 @@ public class DataAccessTests {
     }
     @Test
     void getUserNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
     }
 
     @Test
     void createUserPositive() {
-        Assertions.assertDoesNotThrow(() -> da.clear());
+        Assertions.assertDoesNotThrow(() -> da.createUser("newUser", "newPassword", "email"));
     }
     @Test
     void createUserNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.createUser("username", "password", "email"));
     }
 
     @Test
@@ -43,6 +45,8 @@ public class DataAccessTests {
     }
     @Test
     void createAuthNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -51,6 +55,8 @@ public class DataAccessTests {
     }
     @Test
     void deleteAuthNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -59,6 +65,8 @@ public class DataAccessTests {
     }
     @Test
     void getUsernameNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -67,6 +75,8 @@ public class DataAccessTests {
     }
     @Test
     void listGamesNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -75,6 +85,8 @@ public class DataAccessTests {
     }
     @Test
     void createGameNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -83,6 +95,8 @@ public class DataAccessTests {
     }
     @Test
     void doesGameExistNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -91,6 +105,8 @@ public class DataAccessTests {
     }
     @Test
     void checkForColorNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
+
     }
 
     @Test
@@ -99,6 +115,7 @@ public class DataAccessTests {
     }
     @Test
     void joinGameNegative() {
+        Assertions.assertThrowsExactly(ServiceException.class, () -> da.getUser("username", "wrongPassword"));
     }
 
 }
