@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,6 +47,9 @@ public class DatabaseStore {
             if(!result.next()){
                 return null;
             }
+            if(!BCrypt.checkpw(password, result.getString("passwordHash"))) {
+                return null;
+            }
             return new UserData(result.getString("username"), result.getString("passwordHash"), result.getString("email"));
         } catch(DataAccessException | SQLException e) {
             //do something here!
@@ -58,10 +62,11 @@ public class DatabaseStore {
         var statement = """
                 INSERT into user (username, passwordHash, email) VALUES(?,?,?)
                 """;
+        String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
         try(var conn = DatabaseManager.getConnection()) {
             var update = conn.prepareStatement(statement);
             update.setString(1, username);
-            update.setString(2, password);
+            update.setString(2, passwordHash);
             update.setString(3, email);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
@@ -95,11 +100,11 @@ public class DatabaseStore {
         try(var conn = DatabaseManager.getConnection()) {
             var update = conn.prepareStatement(statement);
             update.setString(1, authToken);
-            update.executeUpdate();
+            return update.executeUpdate() != 0;
         } catch(DataAccessException | SQLException e) {
             throw new RuntimeException(e);
         }
-        return true; //todo: fix
+        //return true; //todo: fix
     }
 
     public String getUsername(String authToken) {
@@ -134,7 +139,7 @@ public class DatabaseStore {
                 String blackUsername = result.getString("blackUsername");
                 String gameName = result.getString("gameName");
                 ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-                ret.add(new GameData(gameID-1, whiteUsername, blackUsername, gameName, game));
+                ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
             }
             return ret;
         } catch(DataAccessException | SQLException e) {
@@ -152,12 +157,35 @@ public class DatabaseStore {
             update.setString(3, gameName);
             update.setString(4, new Gson().toJson(new ChessGame(), ChessGame.class));
             update.executeUpdate();
-            return new GameData(0,"","","", new ChessGame());
+            return getGame(gameName);
+            //return new GameData(0,"","","", new ChessGame());
         } catch(DataAccessException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
+    public GameData getGame(String gameName) {
+        var statement = """
+                SELECT gameID,whiteUsername,blackUsername,gameName,game 
+                FROM game 
+                WHERE gameName=?
+                """;
+        try(var conn = DatabaseManager.getConnection()) {
+            var query = conn.prepareStatement(statement);
+            query.setString(1,gameName);
+            var result = query.executeQuery();
+            if(!result.next()){
+                return null;
+            }
+            String whiteUsername = result.getString("whiteUsername");
+            String blackUsername = result.getString("blackUsername");
+            int gameID = result.getInt("gameID");
+            ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
+            return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+        } catch(DataAccessException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //return new GameData(0,"","","", new ChessGame());
+    }
     public GameData getGame(int gameID) {
         var statement = """
                 SELECT gameID,whiteUsername,blackUsername,gameName,game 
@@ -166,7 +194,7 @@ public class DatabaseStore {
                 """;
         try(var conn = DatabaseManager.getConnection()) {
             var query = conn.prepareStatement(statement);
-            query.setInt(1,gameID+1);
+            query.setInt(1,gameID);
             var result = query.executeQuery();
             if(!result.next()){
                 return null;
@@ -175,7 +203,7 @@ public class DatabaseStore {
             String blackUsername = result.getString("blackUsername");
             String gameName = result.getString("gameName");
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-            return new GameData(gameID+1, whiteUsername, blackUsername, gameName, game);
+            return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch(DataAccessException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -195,7 +223,7 @@ public class DatabaseStore {
             var update = conn.prepareStatement(statement1+statement2+statement3);
 
             update.setString(1, username);
-            update.setInt(2, gameID+1);
+            update.setInt(2, gameID);
             update.executeUpdate();
         } catch(DataAccessException | SQLException e) {
             throw new RuntimeException(e);
