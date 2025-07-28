@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
 import chess.ChessPosition;
 
 import static ui.EscapeSequences.*;
@@ -105,7 +106,51 @@ public class UserInterface {
             }
             output += " abcdefgh " + RESET_BG_COLOR + RESET_TEXT_COLOR;
         } else {
+            output = SET_BG_COLOR_DARK_GREY + " hgfedcba ";
+            for (int i = 8; i >= 1; i--) {
+                output += String.valueOf(i);
+                for (int j = 8; j >= 1; j--) {
+                    output += isOddSpace ? SET_BG_COLOR_WHITE : SET_BG_COLOR_BLACK;
+                    isOddSpace = !isOddSpace;
+                    output += getCharacter(board.getPiece(new ChessPosition(i, j)));
+                }
+                output += SET_BG_COLOR_DARK_GREY + i + '\n';
+            }
+            output += " hgfedcba " + RESET_BG_COLOR + RESET_TEXT_COLOR;
+        }
+        return output;
+    }
 
+    private String getCharacter(ChessPiece piece) {
+        String output = "";
+        if(piece == null) {
+            return " ";
+        }
+
+        if(piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            output += SET_TEXT_COLOR_WHITE;
+        } else {
+            output += SET_BG_COLOR_BLACK;
+        }
+        switch (piece.getPieceType()) {
+            case KING -> {
+                output += BLACK_KING;
+            }
+            case QUEEN -> {
+                output += BLACK_QUEEN;
+            }
+            case BISHOP -> {
+                output += BLACK_BISHOP;
+            }
+            case KNIGHT -> {
+                output += BLACK_KNIGHT;
+            }
+            case ROOK -> {
+                output += BLACK_ROOK;
+            }
+            case PAWN -> {
+                output+= BLACK_PAWN;
+            }
         }
         return output;
     }
