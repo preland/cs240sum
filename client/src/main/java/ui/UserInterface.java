@@ -115,31 +115,32 @@ public class UserInterface {
         String output = "";
         boolean isOddSpace = true;
         if(isWhitePerspective) {
-            output = SET_BG_COLOR_DARK_GREY + EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR + "\n";
+            output = SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + "\n";
             ;
-            for (int i = 1; i <= 8; i++) {
+            for (int i = 8; i >= 1; i--) {
                 output += getNum(i);
                 for (int j = 1; j <= 8; j++) {
                     output += isOddSpace ? SET_BG_COLOR_GREEN : SET_BG_COLOR_DARK_GREEN;
                     isOddSpace = !isOddSpace;
                     output += getCharacter(board.getPiece(new ChessPosition(i, j)));
                 }
-                output += SET_BG_COLOR_DARK_GREY + getNum(i) + '\n';
+                output += SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + getNum(i) + RESET_BG_COLOR + "\n";
                 isOddSpace = !isOddSpace;
             }
-            output += EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
+            output += SET_BG_COLOR_DARK_GREY + EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
         } else {
-            output = SET_BG_COLOR_DARK_GREY + EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + "\n";
-            for (int i = 8; i >= 1; i--) {
-                output += RESET_BG_COLOR + RESET_TEXT_COLOR + String.valueOf(i);
+            output = SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + "\n";
+            for (int i = 1; i <= 8; i++) {
+                output += SET_BG_COLOR_DARK_GREY + getNum(i);
                 for (int j = 8; j >= 1; j--) {
-                    output += isOddSpace ? SET_BG_COLOR_WHITE : SET_BG_COLOR_BLACK;
+                    output += isOddSpace ? SET_BG_COLOR_GREEN : SET_BG_COLOR_DARK_GREEN;
                     isOddSpace = !isOddSpace;
                     output += getCharacter(board.getPiece(new ChessPosition(i, j)));
                 }
-                output += SET_BG_COLOR_DARK_GREY + i + '\n';
+                output += SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + getNum(i) + RESET_BG_COLOR + '\n';
+                isOddSpace = !isOddSpace;
             }
-            output += EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
+            output += SET_BG_COLOR_DARK_GREY + EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
         }
         return output;
     }
