@@ -1,5 +1,11 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
+
+import static ui.EscapeSequences.*;
+
 public class UserInterface {
     boolean quit = false;
     boolean postLogin = false;
@@ -18,16 +24,29 @@ public class UserInterface {
                         handleLogout();
                         break;
                     case "create":
-                        handleCreateGame();
+                        if(input.length != 2) {
+                            System.out.println("invalid input. try again, or type help");
+                            break;
+                        }
+                        handleCreateGame(input[1]);
                         break;
                     case "list":
                         handleListGames();
                         break;
                     case "play":
-                        handlePlayGame();
+                        if(input.length != 3) {
+                            System.out.println("invalid input. try again, or type help");
+                            break;
+                        }
+                        //todo/note: handle incorrect team choice
+                        handlePlayGame(input[1], input[2]);
                         break;
                     case "view":
-                        handleViewGame();
+                        if(input.length != 2) {
+                            System.out.println("invalid input. try again, or type help");
+                            break;
+                        }
+                        handleViewGame(input[1]);
                         break;
                     default:
                         System.out.println("invalid input. try again, or type help");
@@ -60,5 +79,34 @@ public class UserInterface {
                 }
             }
         }
+    }
+
+    private void handleViewGame(String s) {
+        //todo: add string parsing, for now just display initial board
+        ChessGame testGame = new ChessGame();
+        System.out.println(viewGame(testGame, true));
+
+    }
+
+    private String viewGame(ChessGame testGame, boolean isWhitePerspective) {
+        ChessBoard board = testGame.getBoard();
+        String output = "";
+        boolean isOddSpace = true;
+        if(isWhitePerspective) {
+            output = SET_BG_COLOR_DARK_GREY + " abcdefgh ";
+            for (int i = 1; i <= 8; i++) {
+                output += String.valueOf(i);
+                for (int j = 1; j <= 8; j++) {
+                    output += isOddSpace ? SET_BG_COLOR_WHITE : SET_BG_COLOR_BLACK;
+                    isOddSpace = !isOddSpace;
+                    output += getCharacter(board.getPiece(new ChessPosition(i, j)));
+                }
+                output += SET_BG_COLOR_DARK_GREY + i + '\n';
+            }
+            output += " abcdefgh " + RESET_BG_COLOR + RESET_TEXT_COLOR;
+        } else {
+
+        }
+        return output;
     }
 }
