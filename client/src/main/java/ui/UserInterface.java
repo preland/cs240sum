@@ -14,7 +14,21 @@ public class UserInterface {
                     case "help":
                         System.out.println("lol no help for you, sucks ig");
                         break;
-
+                    case "logout":
+                        handleLogout();
+                        break;
+                    case "create":
+                        handleCreateGame();
+                        break;
+                    case "list":
+                        handleListGames();
+                        break;
+                    case "play":
+                        handlePlayGame();
+                        break;
+                    case "view":
+                        handleViewGame();
+                        break;
                     default:
                         System.out.println("invalid input. try again, or type help");
                 }
