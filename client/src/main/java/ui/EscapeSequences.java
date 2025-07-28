@@ -60,6 +60,21 @@ public class EscapeSequences {
     public static final String BLACK_ROOK = " ♜ ";
     public static final String BLACK_PAWN = " ♟ ";
     public static final String EMPTY = " \u2003 ";
-
+    public static final String A_CHAR = " a ";
+    public static final String B_CHAR = " b ";
+    public static final String C_CHAR = " c ";
+    public static final String D_CHAR = " d ";
+    public static final String E_CHAR = " e ";
+    public static final String F_CHAR = " f ";
+    public static final String G_CHAR = " g ";
+    public static final String H_CHAR = " h ";
+    public static final String ONE_CHAR = " 1 ";
+    public static final String TWO_CHAR = " 2 ";
+    public static final String THREE_CHAR = " 3 ";
+    public static final String FOUR_CHAR = " 4 ";
+    public static final String FIVE_CHAR = " 5 ";
+    public static final String SIX_CHAR = " 6 ";
+    public static final String SEVEN_CHAR = " 7 ";
+    public static final String EIGHT_CHAR = " 8 ";
     public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
 }
