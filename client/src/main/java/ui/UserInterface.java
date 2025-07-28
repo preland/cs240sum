@@ -11,7 +11,11 @@ import static ui.EscapeSequences.*;
 
 public class UserInterface {
     boolean quit = false;
-    boolean postLogin = true;
+    boolean postLogin = false;
+    ServerFacade facade;
+    public UserInterface() {
+        this.facade = new ServerFacade();
+    }
     public void run() {
         String rawInput = "";
         System.out.println("welcome chess. type help for help. type quit for unhelp");
@@ -94,10 +98,22 @@ public class UserInterface {
     private void handlePlayGame(String s, String s1) {
     }
 
-    private void handleLogin(String s, String s1) {
+    private void handleLogin(String username, String password) {
+        System.out.println("trying to login");
+        if(facade.login(username, password)) {
+            System.out.println("logd in");
+        } else {
+            System.out.println("faiul logn");
+        }
     }
 
-    private void handleRegister(String s, String s1, String s2) {
+    private void handleRegister(String username, String password, String email) {
+        System.out.println("trying to register");
+        if(facade.register(username, password, email)) {
+            System.out.println("succes");
+        } else {
+            System.out.println("faiul");
+        }
     }
 
     private void handleLogout() {
