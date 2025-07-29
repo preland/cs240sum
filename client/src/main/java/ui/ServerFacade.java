@@ -1,7 +1,10 @@
 package ui;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ServerFacade {
     //ight we gotta listen for stuff somehow....lovely
@@ -20,9 +23,24 @@ public class ServerFacade {
     }
     private String request(String method, String path, String body) {
         try {
-            HttpURLConnection http = new URI("http://localhost:"+port+path).toURL().openConnection();
+            HttpURLConnection http = (HttpURLConnection) new URI("http://localhost:"+port+path).toURL().openConnection();
             http.setRequestMethod(method);
 
+            if(body != null) {
+                http.setDoOutput(true);
+                http.addRequestProperty("Content-Type", "application/json");
+                var stream = http.getOutputStream();
+                stream.write(body.getBytes());
+                stream.flush();
+                stream.close();
+            }
+            http.connect();
+
+            try(InputStream ret = http.getInputStream()) {
+                return new String(ret.readAllBytes());
+            }
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
     //public void
