@@ -1,10 +1,13 @@
 package ui;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class ServerFacade {
     //ight we gotta listen for stuff somehow....lovely
@@ -17,9 +20,20 @@ public class ServerFacade {
     }
 
     public boolean login(String username, String password) {
+        Map map = Map.of("username", username, "password", password);
+        String body = new Gson().toJson(map);
+        request("POST", "/session", body);
+        //todo: actual error impl
+        //todo: handle authToken stuff
+        return true;
     }
 
     public boolean register(String username, String password, String email) {
+        Map map = Map.of("username", username, "password", password, "email", email);
+        String body = new Gson().toJson(map);
+        request("POST", "/user", body);
+        //todo: actual error impl
+        return true;
     }
     private String request(String method, String path, String body) {
         try {
