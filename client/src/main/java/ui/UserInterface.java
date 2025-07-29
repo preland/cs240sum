@@ -5,6 +5,7 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -13,6 +14,7 @@ public class UserInterface {
     boolean quit = false;
     boolean postLogin = false;
     ServerFacade facade;
+    String authToken;
     public UserInterface() {
         this.facade = new ServerFacade();
     }
@@ -100,19 +102,27 @@ public class UserInterface {
 
     private void handleLogin(String username, String password) {
         System.out.println("trying to login");
-        if(facade.login(username, password)) {
-            System.out.println("logd in");
+        String req = facade.login(username, password);
+        if(Objects.equals(req, "autherror")) {
+            System.out.println("bad username or password");
+
+        } else if(Objects.equals(req, "connerror")) {
+            System.out.println("faiul: connection failed");
         } else {
-            System.out.println("faiul logn");
+            System.out.println("logd in");
+            postLogin = true;
         }
     }
 
     private void handleRegister(String username, String password, String email) {
         System.out.println("trying to register");
-        if(facade.register(username, password, email)) {
-            System.out.println("succes");
+        String req = facade.register(username, password, email);
+        if(Objects.equals(req, "autherror")) {
+            System.out.println("faiulure to auth");
+        } else if(Objects.equals(req, "connerror")) {
+            System.out.println("faiul: connection failed");
         } else {
-            System.out.println("faiul");
+            System.out.println("succes");
         }
     }
 

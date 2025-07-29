@@ -1,6 +1,7 @@
 package ui;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,21 +20,32 @@ public class ServerFacade {
         this.port = port;
     }
 
-    public boolean login(String username, String password) {
+    public String login(String username, String password) {
         Map map = Map.of("username", username, "password", password);
         String body = new Gson().toJson(map);
-        request("POST", "/session", body);
-        //todo: actual error impl
-        //todo: handle authToken stuff
-        return true;
+        String req = request("POST", "/session", body);
+        if(req.equals("connerror")) {
+            return "connerror";
+        }
+        try {
+            String auth = new Gson().fromJson(req, Map.class).get("authToken").toString();
+            return auth;
+        } catch (JsonSyntaxException e) {
+            return "autherror";
+        }
+
     }
 
-    public boolean register(String username, String password, String email) {
+    public String register(String username, String password, String email) {
         Map map = Map.of("username", username, "password", password, "email", email);
         String body = new Gson().toJson(map);
-        request("POST", "/user", body);
+        String req = request("POST", "/user", body);
+        if(req.equals("connerror")) {
+            return "connerror";
+        }
+        //System.out.println(req);
         //todo: actual error impl
-        return true;
+        return login(username, password);
     }
     private String request(String method, String path, String body) {
         try {
@@ -54,7 +66,8 @@ public class ServerFacade {
                 return new String(ret.readAllBytes());
             }
         } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            return "connerror";
         }
     }
     //public void
