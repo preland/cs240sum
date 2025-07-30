@@ -110,7 +110,9 @@ public class UserInterface {
         ArrayList<GameData> req = facade.listGames(authToken);
         for (int i = 1; i <= req.size(); i++) {
             GameData game = req.get(i - 1);
-            System.out.println((game.gameID())+": "+ game.gameName() + "," + (game.whiteUsername()==null ? " WHITE OPEN" : game.whiteUsername())  + "," + (game.blackUsername()==null ? "BLACK OPEN" : game.blackUsername()));
+            System.out.println((game.gameID())+": "+ game.gameName() + "," + (game.whiteUsername()==null
+                    ? " WHITE OPEN" : game.whiteUsername())  + "," + (game.blackUsername()==null
+                    ? "BLACK OPEN" : game.blackUsername()));
         }
     }
 
@@ -210,7 +212,8 @@ public class UserInterface {
         String output = "";
         boolean isOddSpace = true;
         if(isWhitePerspective) {
-            output = SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + "\n";
+            output = SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + EMPTY + A_CHAR + B_CHAR + C_CHAR +
+                    D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + "\n";
             ;
             for (int i = 8; i >= 1; i--) {
                 output += getNum(i);
@@ -222,9 +225,11 @@ public class UserInterface {
                 output += SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + getNum(i) + RESET_BG_COLOR + "\n";
                 isOddSpace = !isOddSpace;
             }
-            output += SET_BG_COLOR_DARK_GREY + EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR + F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
+            output += SET_BG_COLOR_DARK_GREY + EMPTY + A_CHAR + B_CHAR + C_CHAR + D_CHAR + E_CHAR +
+                    F_CHAR + G_CHAR + H_CHAR+ EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
         } else {
-            output = SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + "\n";
+            output = SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + EMPTY + H_CHAR + G_CHAR + F_CHAR +
+                    E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + "\n";
             for (int i = 1; i <= 8; i++) {
                 output += SET_BG_COLOR_DARK_GREY + getNum(i);
                 for (int j = 8; j >= 1; j--) {
@@ -235,7 +240,8 @@ public class UserInterface {
                 output += SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_BLUE + getNum(i) + RESET_BG_COLOR + '\n';
                 isOddSpace = !isOddSpace;
             }
-            output += SET_BG_COLOR_DARK_GREY + EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR + C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
+            output += SET_BG_COLOR_DARK_GREY + EMPTY + H_CHAR + G_CHAR + F_CHAR + E_CHAR + D_CHAR +
+                    C_CHAR + B_CHAR + A_CHAR + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR;
         }
         return output;
     }

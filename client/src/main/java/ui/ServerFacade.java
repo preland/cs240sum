@@ -72,17 +72,6 @@ public class ServerFacade {
     public ArrayList<GameData> listGames(String auth) {
         String req = request("GET", "/game", null, auth);
         ArrayList<GameData> rawGames = new Gson().fromJson(req, ListGameResponse.class).games();
-        //ArrayList<String> evenRawerGames = new Gson().fromJson(rawGames, new TypeToken<List<String>>() {}.getType());
-        //ArrayList<GameData> ret = new ArrayList<>();
-        /*for(String rawGame : rawGames) {
-            int id = (int) new Gson().fromJson(rawGame, Map.class).get("gameID");
-            String whiteUsername = new Gson().fromJson(rawGame, Map.class).get("whiteUsername").toString();
-            String blackUsername = new Gson().fromJson(rawGame, Map.class).get("blackUsername").toString();
-            String gameName = new Gson().fromJson(rawGame, Map.class).get("gameName").toString();
-            ChessGame game = new Gson().fromJson(new Gson().fromJson(rawGame, Map.class).get("game").toString(), ChessGame.class);
-            ret.add(new GameData(id, whiteUsername, blackUsername, gameName, game));
-        }*/
-        //System.out.println(req);
         return rawGames;
     }
     public String createGame(String gameName, String auth) {
