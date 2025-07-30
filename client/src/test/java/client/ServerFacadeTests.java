@@ -41,7 +41,7 @@ public class ServerFacadeTests {
     }
     @Test
     void loginNegative() {
-        Assertions.assertEquals("autherror",facade.login("username", "password"));
+        Assertions.assertEquals("401",facade.login("username", "password"));
     }
 
     @Test
