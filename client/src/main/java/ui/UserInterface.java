@@ -4,7 +4,9 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import model.GameData;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -28,7 +30,14 @@ public class UserInterface {
             if (postLogin) {
                 switch (input[0]) {
                     case "help":
-                        System.out.println("lol no help for you, sucks ig");
+                        System.out.println("""
+                                help: shows this
+                                logout: logs out
+                                create <Game Name>: creates a game with name
+                                list: lists games
+                                play <id> <WHITE|BLACK>: plays game with given id and team
+                                view <id>: observe game with given id
+                                """);
                         break;
                     case "logout":
                         handleLogout();
@@ -64,7 +73,12 @@ public class UserInterface {
             } else {
                 switch (input[0]) {
                     case "help":
-                        System.out.println("lol no help for you, sucks ig");
+                        System.out.println("""                         
+                                help: shows this message
+                                login <username> <password>: logs in
+                                register <username> <password> <email>: registers new user
+                                quit: quits the application
+                                """);
                         break;
                     case "quit":
                         quit = true;
@@ -92,12 +106,42 @@ public class UserInterface {
     }
 
     private void handleListGames() {
+        System.out.println("listing games: ");
+        ArrayList<GameData> req = facade.listGames(authToken);
+        for (int i = 1; i <= req.size(); i++) {
+            GameData game = req.get(i - 1);
+            System.out.println((game.gameID())+": "+ game.gameName() + "," + (game.whiteUsername()==null ? " WHITE OPEN" : game.whiteUsername())  + "," + (game.blackUsername()==null ? "BLACK OPEN" : game.blackUsername()));
+        }
     }
 
-    private void handleCreateGame(String s) {
+    private void handleCreateGame(String gameName) {
+        System.out.println("creating game " + gameName);
+        String req = facade.createGame(gameName, authToken);
+        if(req.equals("internalerror")) {
+            System.out.println("failed to create game: internal error");
+        } else {
+            System.out.println("created game with gameid: " + Float.valueOf(req).intValue());
+        }
     }
 
-    private void handlePlayGame(String s, String s1) {
+    private void handlePlayGame(String gameID, String teamName) {
+        String req;
+        if(teamName.equals("WHITE")) {
+            System.out.println("joining game");
+            req = facade.joinGame(gameID, true, authToken);
+        } else if(teamName.equals("BLACK")) {
+            System.out.println("joining game");
+            req = facade.joinGame(gameID, false, authToken);
+        } else {
+            System.out.println("invalid color choice");
+            return;
+        }
+        if(req.equals("connerror")) {
+            System.out.println("fail: connection failed");
+        } else {
+            System.out.println("successfully joined");
+        }
+
     }
 
     private void handleLogin(String username, String password) {
@@ -107,9 +151,10 @@ public class UserInterface {
             System.out.println("bad username or password");
 
         } else if(Objects.equals(req, "connerror")) {
-            System.out.println("faiul: connection failed");
+            System.out.println("fail: connection failed");
         } else {
-            System.out.println("logd in");
+            System.out.println("logged in");
+            authToken = req;
             postLogin = true;
         }
     }
@@ -118,19 +163,43 @@ public class UserInterface {
         System.out.println("trying to register");
         String req = facade.register(username, password, email);
         if(Objects.equals(req, "autherror")) {
-            System.out.println("faiulure to auth");
+            System.out.println("failure to authenticate");
         } else if(Objects.equals(req, "connerror")) {
-            System.out.println("faiul: connection failed");
-        } else {
-            System.out.println("succes");
+            System.out.println("fail: connection failed");
+        } else if(Objects.equals("takenerror", req)) {
+            System.out.println("fail: already taken");
+        }
+        else {
+            System.out.println("success");
+            authToken = req;
+            postLogin = true;
         }
     }
 
     private void handleLogout() {
+        System.out.println("logging out");
+        String req = facade.logout(authToken);
+        if(Objects.equals(req, "connerror")) {
+            System.out.println("fail: connection failed");
+        } else {
+            System.out.println("successfully logged out");
+            postLogin = false;
+        }
     }
 
-    private void handleViewGame(String s) {
+    private void handleViewGame(String gameID) {
         //todo: add string parsing, for now just display initial board
+        boolean isMatched = false;
+        ArrayList<GameData> req = facade.listGames(authToken);
+        for (int i = 0; i < req.size(); i++) {
+            if(req.get(i).gameID() == Integer.valueOf(gameID)) {
+                isMatched = true;
+            }
+        }
+        if(!isMatched) {
+            System.out.println("game not found");
+            return;
+        }
         ChessGame testGame = new ChessGame();
         System.out.println(viewGame(testGame, true));
 
