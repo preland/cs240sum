@@ -51,7 +51,7 @@ public class ServerFacadeTests {
     @Test
     void registerNegative() {
         facade.register("username", "password", "email");
-        Assertions.assertEquals("takenerror",facade.register("username", "password", "email"));
+        Assertions.assertEquals("403",facade.register("username", "password", "email"));
     }
 
     @Test
@@ -68,12 +68,12 @@ public class ServerFacadeTests {
     void joinGamePositive() {
         String token = facade.register("username", "password", "email");
         String id = facade.createGame("anme", token);
-        Assertions.assertNotEquals("connerror", facade.joinGame(id.substring(0,1), true, token));
+        Assertions.assertNotEquals("connerror", facade.joinGame(1, true, token));
     }
     @Test
     void joinGameNegative() {
         String token = facade.register("username", "password", "email");
-        Assertions.assertEquals("takenerror", facade.joinGame("10", true, token));
+        Assertions.assertEquals("400", facade.joinGame(10, true, token));
     }
 
     @Test

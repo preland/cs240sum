@@ -31,14 +31,14 @@ public class ServerFacade {
         Map map = Map.of("username", username, "password", password);
         String body = new Gson().toJson(map);
         String req = request("POST", "/session", body, null);
-        if(req.equals("connerror")) {
-            return "connerror";
+        if(req.equals("401")) {
+            return "401";
         }
         try {
             String auth = new Gson().fromJson(req, Map.class).get("authToken").toString();
             return auth;
         } catch (JsonSyntaxException e) {
-            return "autherror";
+            return "401";
         }
 
     }
@@ -49,8 +49,8 @@ public class ServerFacade {
         String req = request("POST", "/user", body, null);
         if(req.equals("connerror")) {
             return "connerror";
-        } else if (req.equals("takenerror")) {
-            return "takenerror";
+        } else if (req.equals("403")) {
+            return "403";
         }
         //System.out.println(req);
         //todo: actual error impl
@@ -63,8 +63,8 @@ public class ServerFacade {
         }
         return "";
     }
-    public String joinGame(String gameID, boolean isWhite, String auth) {
-        Map map = Map.of("gameID", Integer.valueOf(gameID), "playerColor", isWhite ? "WHITE" : "BLACK");
+    public String joinGame(int gameID, boolean isWhite, String auth) {
+        Map map = Map.of("gameID", gameID, "playerColor", isWhite ? "WHITE" : "BLACK");
         String body = new Gson().toJson(map);
         String req = request("PUT", "/game", body, auth);
         return req;
@@ -78,8 +78,9 @@ public class ServerFacade {
         Map map = Map.of("gameName", gameName);
         String body = new Gson().toJson(map);
         String req = request("POST", "/game", body, auth);
+
         try {
-            System.out.println(req);
+            //System.out.println(req);
             String id = new Gson().fromJson(req, Map.class).get("gameID").toString();
             return id;
         } catch (NullPointerException e) {
@@ -109,10 +110,11 @@ public class ServerFacade {
             }
         } catch (URISyntaxException e) {
             //throw new RuntimeException(e);
-            return "connerror";
+            return "500";
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return "takenerror";//e.getMessage();
+            //Server returned HTTP response code: 403 for URL:
+            //System.out.println(e.getMessage().substring(36,39));
+            return e.getMessage().substring(36,39);//e.getMessage();
         }
     }
     public void clear() {
