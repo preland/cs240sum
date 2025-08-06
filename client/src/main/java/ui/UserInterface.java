@@ -15,6 +15,8 @@ import static ui.EscapeSequences.*;
 public class UserInterface {
     boolean quit = false;
     boolean postLogin = false;
+    boolean inGame = false;
+    int currentGame = -1;
     ServerFacade facade;
     String authToken;
     public UserInterface() {
@@ -27,7 +29,41 @@ public class UserInterface {
         while (!quit) {
             rawInput = scanner.nextLine();
             String[] input = rawInput.split(" ");
-            if (postLogin) {
+            if(inGame) {
+                switch (input[0]) {
+                    case "help":
+                        System.out.println("""
+                                help: shows this
+                                redraw: redraws the game
+                                move <startPosition> <endPosition> (promotionPiece): make a move
+                                leave: leave the game
+                                resign: forfeit the game
+                                moves <position>: show valid moves for given player
+                                """);
+                        break;
+                    case "redraw":
+                        handleRedraw();
+                        break;
+                    case "move":
+                        if(input.length != 3 && input.length != 4) {
+                            System.out.println("invalid input. try again, or type help");
+                            break;
+                        }
+                        handleMove(parsePos(input[1]), parsePos(input[2]), input[3]);
+                        break;
+                    case "leave":
+                        handleLeave();
+                        break;
+                    case "resign":
+                        handleResign();
+                        break;
+                    case "moves":
+                        handleMoves();
+                        break;
+                    default:
+                        System.out.println("invalid input. try again, or type help");
+                }
+            } else if (postLogin) {
                 switch (input[0]) {
                     case "help":
                         System.out.println("""
