@@ -4,10 +4,12 @@ import chess.ChessPiece;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
+import org.eclipse.jetty.websocket.api.Session;
 import server.Handler;
 import service.Service;
 import service.ServiceException;
-import spark.*;
+import spark.Spark;
+//import spark.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
