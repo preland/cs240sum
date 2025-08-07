@@ -53,7 +53,7 @@ public class WebSocketHandler {
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
             ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             msg.setGame(gameData);
-            notify(session, msg);
+            notifyAll(session, msg);
         } catch (ServiceException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,12 +67,25 @@ public class WebSocketHandler {
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
             if(cmd.getTeam() == null) {
                 //todo: handle error
+                return;
             }
             ChessGame.TeamColor team = Objects.equals(cmd.getTeam(), "WHITE") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+            if(gameData.game() == null) {
+                //todo: handle
+                return;
+            }
             if(gameData.game().getTeamTurn() != team) {
                 //todo: handle error
+                return;
             }
-            gameData.game().makeMove(cmd.getMove());
+            try {
+                gameData.game().makeMove(cmd.getMove());
+            } catch (InvalidMoveException e) {
+                ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                //todo: handle msg stuff
+                notify(session, msg);
+                return;
+            }
             ChessGame.TeamColor opponent = Objects.equals(cmd.getTeam(), "WHITE") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
             if(gameData.game().isInCheckmate(opponent)) {
                 //todo: handle win
@@ -83,14 +96,21 @@ public class WebSocketHandler {
             }
             ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             //todo: handle msg stuff
-            notify(session, msg);
-        } catch (ServiceException | InvalidMoveException | IOException e) {
+            notifyAll(session, msg);
+        } catch (ServiceException | IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
     private void handleResign(Session session, String message) {
+    }
+    private void notifyAll(Session session, ServerMessage serverMessage) throws IOException{
+        for(Session s : Server.sessions.keySet()) {
+            if(Objects.equals(Server.sessions.get(s), Server.sessions.get(session))) {
+                notify(session, serverMessage);
+            }
+        }
     }
     private void notify(Session session, ServerMessage serverMessage) throws IOException {
         String message = new Gson().toJson(serverMessage);
