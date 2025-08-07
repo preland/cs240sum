@@ -36,6 +36,7 @@ public class WebSocketHandler {
                 //handleLeave(session, message, cmd);
                 break;
             case MAKE_MOVE:
+
                 handleMove(session, message, cmd);
                 break;
             case RESIGN:
@@ -63,27 +64,30 @@ public class WebSocketHandler {
     }
 
     private void handleMove(Session session, String message, UserGameCommand cmd) {
-        String output;
-        ServerMessage msg = null;
+        String output = "unknown error";
+        ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
         try {
+            String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
-            if(cmd.getTeam() == null) {
+            if(username == null) {
                 //todo: handle error
                 output = "you are observing";
                 throw new ServiceException(400);
             }
-            ChessGame.TeamColor team = Objects.equals(cmd.getTeam(), "WHITE") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
             if(gameData.game() == null) {
                 //todo: handle
                 output = "game does not exist";
                 throw new ServiceException(500);
             }
+            ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
             if(gameData.game().getTeamTurn() != team) {
                 output = "it is not your turn!";
                 throw new ServiceException(400);
             }
             try {
                 gameData.game().makeMove(cmd.getMove());
+                DataAccess.getInstance().updateGame(cmd.getGameID(), gameData.game());
             } catch (InvalidMoveException e) {
                 msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 output = "invalid move";
@@ -91,7 +95,7 @@ public class WebSocketHandler {
                 notify(session, msg);
                 return;
             }
-            ChessGame.TeamColor opponent = Objects.equals(cmd.getTeam(), "WHITE") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+            ChessGame.TeamColor opponent = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
             if(gameData.game().isInCheckmate(opponent)) {
                 output = "game over; " + team + " wins";
             } else if(gameData.game().isInStalemate(opponent)) {

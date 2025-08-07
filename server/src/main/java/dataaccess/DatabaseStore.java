@@ -224,4 +224,17 @@ public class DatabaseStore {
             throw new RuntimeException(e);
         }
     }
+
+    public void updateGame(int gameID, ChessGame game) {
+        var statement1 = "UPDATE game SET game=? WHERE gameID=?";
+        try(var conn = DatabaseManager.getConnection()) {
+            var update = conn.prepareStatement(statement1);
+
+            update.setString(1, new Gson().toJson(game));
+            update.setInt(2, gameID);
+            update.executeUpdate();
+        } catch(DataAccessException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

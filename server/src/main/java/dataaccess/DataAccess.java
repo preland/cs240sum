@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -80,5 +81,8 @@ public class DataAccess {
 
     public void joinGame(String username, String playerColor, int gameID) throws ServiceException {
         storage.modifyGame(gameID, username, playerColor);
+    }
+    public void updateGame(int gameID, ChessGame game) {
+        storage.updateGame(gameID, game);
     }
 }

@@ -19,7 +19,7 @@ public class UserGameCommand {
 
     private final Integer gameID;
 
-    private String teamColor;
+    //private String teamColor;
     private ChessMove move;
 
     public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
@@ -28,12 +28,12 @@ public class UserGameCommand {
         this.gameID = gameID;
     }
 
-    public void setTeam(String teamColor) {
+    /*public void setTeam(String teamColor) {
         this.teamColor = teamColor;
     }
     public String getTeam() {
         return this.teamColor;
-    }
+    }*/
     public void setMove(ChessMove move) {
         this.move = move;
     }
