@@ -105,14 +105,15 @@ public class WebSocketHandler {
                 throw new ServiceException(500);
             }
             ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-
+            if(!gameData.isActive()) {
+                output = "game has ended";
+                throw new ServiceException(400);
+            }
             if(gameData.game().getTeamTurn() != team && !Objects.equals(gameData.whiteUsername(), gameData.blackUsername())) {
                 output = "it is not your turn!";
                 throw new ServiceException(400);
             }
-            if(!gameData.isActive()) {
-                output = "game has ended";
-            }
+
             try {
                 gameData.game().makeMove(cmd.getMove());
                 DataAccess.getInstance().updateGame(cmd.getGameID(), gameData.game());
@@ -169,12 +170,12 @@ public class WebSocketHandler {
                 output = "game does not exist";
                 throw new ServiceException(500);
             }
-            ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-
-            if(gameData.game().getTeamTurn() != team && !Objects.equals(gameData.whiteUsername(), gameData.blackUsername())) {
-                output = "it is not your turn!";
+            if(!Objects.equals(gameData.whiteUsername(), username) && !Objects.equals(gameData.blackUsername(), username)) {
+                output = "you are observing";
                 throw new ServiceException(400);
             }
+            ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
             DataAccess.getInstance().endGame(cmd.getGameID());
             output = username + " has resigned. game over";
             msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);

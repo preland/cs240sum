@@ -133,8 +133,9 @@ public class DatabaseStore {
                 String whiteUsername = result.getString("whiteUsername");
                 String blackUsername = result.getString("blackUsername");
                 String gameName = result.getString("gameName");
+                boolean isActive = result.getBoolean("isActive");
                 ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-                ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game, true));
+                ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game, isActive));
             }
             return ret;
         } catch(DataAccessException | SQLException e) {
@@ -161,7 +162,7 @@ public class DatabaseStore {
     }
     public GameData getGame(String gameName) throws ServiceException{
         var statement = """
-                SELECT gameID,whiteUsername,blackUsername,gameName,game 
+                SELECT gameID,whiteUsername,blackUsername,gameName,game,isActive
                 FROM game 
                 WHERE gameName=?
                 """;
@@ -175,8 +176,9 @@ public class DatabaseStore {
             String whiteUsername = result.getString("whiteUsername");
             String blackUsername = result.getString("blackUsername");
             int gameID = result.getInt("gameID");
+            boolean isActive = result.getBoolean("isActive");
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-            return new GameData(gameID, whiteUsername, blackUsername, gameName, game, true);
+            return new GameData(gameID, whiteUsername, blackUsername, gameName, game, isActive);
         } catch(DataAccessException | SQLException e) {
             throw new ServiceException(500, e.getMessage());
         }
