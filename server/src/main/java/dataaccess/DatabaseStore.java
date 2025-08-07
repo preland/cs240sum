@@ -134,7 +134,7 @@ public class DatabaseStore {
                 String blackUsername = result.getString("blackUsername");
                 String gameName = result.getString("gameName");
                 ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-                ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+                ret.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game, true));
             }
             return ret;
         } catch(DataAccessException | SQLException e) {
@@ -144,13 +144,14 @@ public class DatabaseStore {
     }
 
     public GameData createGame(String gameName) throws ServiceException{
-        var statement = "INSERT INTO game (whiteUsername,blackUsername,gameName,game) VALUES(?,?,?,?)";
+        var statement = "INSERT INTO game (whiteUsername,blackUsername,gameName,game,isActive) VALUES(?,?,?,?,?)";
         try(var conn = DatabaseManager.getConnection()) {
             var update = conn.prepareStatement(statement);
             update.setString(1, null);
             update.setString(2, null);
             update.setString(3, gameName);
             update.setString(4, new Gson().toJson(new ChessGame(), ChessGame.class));
+            update.setBoolean(5, true);
             update.executeUpdate();
             return getGame(gameName);
             //return new GameData(0,"","","", new ChessGame());
@@ -175,7 +176,7 @@ public class DatabaseStore {
             String blackUsername = result.getString("blackUsername");
             int gameID = result.getInt("gameID");
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-            return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+            return new GameData(gameID, whiteUsername, blackUsername, gameName, game, true);
         } catch(DataAccessException | SQLException e) {
             throw new ServiceException(500, e.getMessage());
         }
@@ -198,7 +199,7 @@ public class DatabaseStore {
             String blackUsername = result.getString("blackUsername");
             String gameName = result.getString("gameName");
             ChessGame game = new Gson().fromJson(result.getString("game"), ChessGame.class);
-            return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+            return new GameData(gameID, whiteUsername, blackUsername, gameName, game, true);
         } catch(DataAccessException | SQLException e) {
             throw new ServiceException(500, e.getMessage());
         }
@@ -239,5 +240,15 @@ public class DatabaseStore {
     }
 
     public void endGame(int gameID) {
+        var statement1 = "UPDATE game SET isActive=? WHERE gameID=?";
+        try(var conn = DatabaseManager.getConnection()) {
+            var update = conn.prepareStatement(statement1);
+
+            update.setBoolean(1, false);
+            update.setInt(2, gameID);
+            update.executeUpdate();
+        } catch(DataAccessException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

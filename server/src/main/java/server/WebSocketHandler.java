@@ -110,6 +110,9 @@ public class WebSocketHandler {
                 output = "it is not your turn!";
                 throw new ServiceException(400);
             }
+            if(!gameData.isActive()) {
+                output = "game has ended";
+            }
             try {
                 gameData.game().makeMove(cmd.getMove());
                 DataAccess.getInstance().updateGame(cmd.getGameID(), gameData.game());
@@ -123,8 +126,10 @@ public class WebSocketHandler {
             ChessGame.TeamColor opponent = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
             if(gameData.game().isInCheckmate(opponent)) {
                 output = "game over; " + team + " wins";
+                DataAccess.getInstance().endGame(cmd.getGameID());
             } else if(gameData.game().isInStalemate(opponent)) {
                 output = "game over; stalemate";
+                DataAccess.getInstance().endGame(cmd.getGameID());
             } else if(gameData.game().isInCheck(opponent)) {
                 output = opponent + " is in check";
             } else {
@@ -170,6 +175,7 @@ public class WebSocketHandler {
                 output = "it is not your turn!";
                 throw new ServiceException(400);
             }
+            DataAccess.getInstance().endGame(cmd.getGameID());
             output = username + " has resigned. game over";
             msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             msg.setMessage(output);

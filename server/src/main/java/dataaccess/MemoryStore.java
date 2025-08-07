@@ -72,7 +72,7 @@ public class MemoryStore {
     }
 
     public GameData createGame(String gameName) {
-        GameData newGame = new GameData(iter, null, null, gameName, new ChessGame());
+        GameData newGame = new GameData(iter, null, null, gameName, new ChessGame(), false);
         iter++;
         gameData.add(newGame);
         return newGame;
@@ -90,9 +90,9 @@ public class MemoryStore {
         String gameName = game.gameName();
         ChessGame chessGame = game.game();
         if(Objects.equals(playerColor, "WHITE")) {
-            gameData.set(index, new GameData(gameID, username, blackUsername, gameName, chessGame));
+            gameData.set(index, new GameData(gameID, username, blackUsername, gameName, chessGame, false));
         } else {
-            gameData.set(index, new GameData(gameID, whiteUsername, username, gameName, chessGame));
+            gameData.set(index, new GameData(gameID, whiteUsername, username, gameName, chessGame, false));
 
         }
     }
