@@ -89,6 +89,7 @@ public class DataAccess {
         storage.endGame(gameID);
     }
 
-    public void leaveGame(Integer gameID, ChessGame.TeamColor teamColor) {
+    public void leaveGame(Integer gameID, ChessGame.TeamColor teamColor) throws ServiceException {
+        storage.modifyGame(gameID, null, teamColor.toString());
     }
 }
