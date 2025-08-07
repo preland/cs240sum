@@ -33,37 +33,40 @@ public class WebSocketHandler {
                 handleConnect(session, message, cmd);
                 break;
             case LEAVE:
-                //handleLeave(session, message, cmd);
+                handleLeave(session, message, cmd);
                 break;
             case MAKE_MOVE:
 
                 handleMove(session, message, cmd);
                 break;
             case RESIGN:
-                //handleResign(session, message, cmd);
+                handleResign(session, message, cmd);
                 break;
             default:
                 break;
         }
-        System.out.println(message);
+        //System.out.println(message);
     }
 
     private void handleConnect(Session session, String message, UserGameCommand cmd) {
         Server.sessions.replace(session, cmd.getGameID());
+
         try {
+            String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
             ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             msg.setGame(gameData);
             notify(session, msg);
-            msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            msg.setGame(null);
-            notifyAllBut(session, msg);
+            ServerMessage msg1 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            msg1.setMessage(username + " joined game");
+            notifyAllBut(session, msg1);
         } catch (ServiceException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void handleLeave(Session session, String message) {
+    private void handleLeave(Session session, String message, UserGameCommand cmd) {
+
     }
 
     private void handleMove(Session session, String message, UserGameCommand cmd) {
@@ -84,7 +87,7 @@ public class WebSocketHandler {
             }
             ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
-            if(gameData.game().getTeamTurn() != team) {
+            if(gameData.game().getTeamTurn() != team && !Objects.equals(gameData.whiteUsername(), gameData.blackUsername())) {
                 output = "it is not your turn!";
                 throw new ServiceException(400);
             }
@@ -108,15 +111,17 @@ public class WebSocketHandler {
             } else {
                 output = team + "has finished their move";
             }
-            msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            //todo: handle msg stuff
-            msg.setMessage(output);
+            msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+            msg.setGame(gameData);
             notifyAll(session, msg);
+            msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            msg.setMessage(output);
+            notifyAllBut(session, msg);
         } catch (ServiceException | IOException e) {
             //throw new RuntimeException(e);
             msg.setMessage(output);
             try {
-                notifyAll(session, msg);
+                notify(session, msg);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -124,7 +129,7 @@ public class WebSocketHandler {
 
     }
 
-    private void handleResign(Session session, String message) {
+    private void handleResign(Session session, String message, UserGameCommand cmd) {
     }
     private void notifyAllBut(Session session, ServerMessage serverMessage) throws IOException{
         for(Session s : Server.sessions.keySet()) {
@@ -135,6 +140,7 @@ public class WebSocketHandler {
                 notify(session, serverMessage);
             }
         }
+        System.out.println("end loop");
     }
     private void notifyAll(Session session, ServerMessage serverMessage) throws IOException{
         for(Session s : Server.sessions.keySet()) {
@@ -145,6 +151,8 @@ public class WebSocketHandler {
     }
     private void notify(Session session, ServerMessage serverMessage) throws IOException {
         String message = new Gson().toJson(serverMessage);
+        System.out.println(session.getRemote().toString());
+        System.out.println(message);
         session.getRemote().sendString(message);
     }
 }

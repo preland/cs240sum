@@ -21,7 +21,7 @@ public class TestFactory {
             .toString().contains("jdwp");
 
         if (isDebug){
-            return 300000L;
+            return 3000L;
         }
 
         return 3000L;
