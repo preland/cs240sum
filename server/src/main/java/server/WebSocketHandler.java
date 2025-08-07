@@ -50,16 +50,23 @@ public class WebSocketHandler {
 
     private void handleConnect(Session session, String message, UserGameCommand cmd) {
         Server.sessions.replace(session, cmd.getGameID());
-
         try {
             String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
+            if(gameData.game() == null) {
+                //todo: handle
+                //output = "game does not exist";
+                throw new ServiceException(500);
+            }
+
             ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             msg.setGame(gameData);
             notify(session, msg);
-            ServerMessage msg1 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            msg1.setMessage(username + " joined game");
-            notifyAllBut(session, msg1);
+            //if(Objects.equals(gameData.whiteUsername(), username) || Objects.equals(gameData.blackUsername(), username)) {
+                ServerMessage msg1 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                msg1.setMessage(username + " joined game");
+                notifyAllBut(session, msg1);
+            //}
         } catch (ServiceException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -137,7 +144,7 @@ public class WebSocketHandler {
                 continue;
             }
             if(Objects.equals(Server.sessions.get(s), Server.sessions.get(session))) {
-                notify(session, serverMessage);
+                notify(s, serverMessage);
             }
         }
         System.out.println("end loop");
