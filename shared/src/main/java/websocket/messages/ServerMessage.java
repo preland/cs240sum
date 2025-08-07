@@ -13,6 +13,11 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
     GameData game;
+    String message;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,

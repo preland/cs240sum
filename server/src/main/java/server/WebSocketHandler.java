@@ -63,42 +63,56 @@ public class WebSocketHandler {
     }
 
     private void handleMove(Session session, String message, UserGameCommand cmd) {
+        String output;
+        ServerMessage msg = null;
         try {
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
             if(cmd.getTeam() == null) {
                 //todo: handle error
-                return;
+                output = "you are observing";
+                throw new ServiceException(400);
             }
             ChessGame.TeamColor team = Objects.equals(cmd.getTeam(), "WHITE") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
             if(gameData.game() == null) {
                 //todo: handle
-                return;
+                output = "game does not exist";
+                throw new ServiceException(500);
             }
             if(gameData.game().getTeamTurn() != team) {
-                //todo: handle error
-                return;
+                output = "it is not your turn!";
+                throw new ServiceException(400);
             }
             try {
                 gameData.game().makeMove(cmd.getMove());
             } catch (InvalidMoveException e) {
-                ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                //todo: handle msg stuff
+                msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                output = "invalid move";
+                msg.setMessage(output);
                 notify(session, msg);
                 return;
             }
             ChessGame.TeamColor opponent = Objects.equals(cmd.getTeam(), "WHITE") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
             if(gameData.game().isInCheckmate(opponent)) {
-                //todo: handle win
+                output = "game over; " + team + " wins";
             } else if(gameData.game().isInStalemate(opponent)) {
-                //todo: handle tie
+                output = "game over; stalemate";
             } else if(gameData.game().isInCheck(opponent)) {
-                //todo: handle check
+                output = opponent + " is in check";
+            } else {
+                output = team + "has finished their move";
             }
-            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             //todo: handle msg stuff
+            msg.setMessage(output);
             notifyAll(session, msg);
         } catch (ServiceException | IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            msg.setMessage(output);
+            try {
+                notifyAll(session, msg);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
     }
