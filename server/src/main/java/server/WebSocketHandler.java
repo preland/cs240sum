@@ -50,12 +50,13 @@ public class WebSocketHandler {
 
     private void handleConnect(Session session, String message, UserGameCommand cmd) {
         Server.sessions.replace(session, cmd.getGameID());
+        String output = "Unknown";
         try {
             String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
-            if(gameData.game() == null) {
-                //todo: handle
-                //output = "game does not exist";
+            if(gameData == null) {
+
+                output = "game does not exist";
                 throw new ServiceException(500);
             }
 
@@ -68,7 +69,14 @@ public class WebSocketHandler {
                 notifyAllBut(session, msg1);
             //}
         } catch (ServiceException | IOException e) {
-            throw new RuntimeException(e);
+            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            msg.setErrorMessage(output);
+            try {
+                notify(session, msg);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            //throw new RuntimeException(e);
         }
     }
 
