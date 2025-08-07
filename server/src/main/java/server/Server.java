@@ -10,14 +10,16 @@ import service.ServiceException;
 import spark.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Server {
-
+    static HashMap<Session, Integer> sessions = new HashMap();
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/ws", WebSocketHandler.class);
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", (request, response) -> {
             //response.status(200);

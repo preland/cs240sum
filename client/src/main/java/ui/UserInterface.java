@@ -160,6 +160,7 @@ public class UserInterface {
     }
 
     private void handleRedraw() {
+
     }
 
     private void handleMove(ChessPosition chessPosition, ChessPosition chessPosition1, String s) {
