@@ -49,7 +49,11 @@ public class UserInterface {
                             System.out.println("invalid input. try again, or type help");
                             break;
                         }
-                        handleMove(parsePos(input[1]), parsePos(input[2]), input[3]);
+                        if(input.length != 4) {
+                            handleMove(parsePos(input[1]), parsePos(input[2]), null);
+                        } else {
+                            handleMove(parsePos(input[1]), parsePos(input[2]), input[3]);
+                        }
                         break;
                     case "leave":
                         handleLeave();
@@ -58,7 +62,11 @@ public class UserInterface {
                         handleResign();
                         break;
                     case "moves":
-                        handleMoves();
+                        if(input.length != 2) {
+                            System.out.println("invalid input. try again, or type help");
+                            break;
+                        }
+                        handleMoves(parsePos(input[1]));
                         break;
                     default:
                         System.out.println("invalid input. try again, or type help");
@@ -149,6 +157,24 @@ public class UserInterface {
                 }
             }
         }
+    }
+
+    private void handleRedraw() {
+    }
+
+    private void handleMove(ChessPosition chessPosition, ChessPosition chessPosition1, String s) {
+    }
+
+    private void handleLeave() {
+    }
+
+    private void handleResign() {
+    }
+
+    private void handleMoves(ChessPosition chessPosition) {
+    }
+
+    private ChessPosition parsePos(String s) {
     }
 
     private void handleListGames() {
