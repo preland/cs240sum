@@ -88,4 +88,7 @@ public class DataAccess {
     public void endGame(int gameID) {
         storage.endGame(gameID);
     }
+
+    public void leaveGame(Integer gameID, ChessGame.TeamColor teamColor) {
+    }
 }

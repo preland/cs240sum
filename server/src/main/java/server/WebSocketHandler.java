@@ -86,6 +86,36 @@ public class WebSocketHandler {
 
     private void handleLeave(Session session, String message, UserGameCommand cmd) {
 
+        String output = "unknown";
+        try {
+            String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
+            GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
+            if(gameData == null) {
+                //todo: handle
+                output = "game does not exist";
+                throw new ServiceException(500);
+            }
+            ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            if(username == null) {
+                //todo: handle error
+                output = "auth error";
+                throw new ServiceException(400);
+            }
+            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            msg.setMessage(username + " has left");
+            notifyAllBut(session, msg);
+            Server.sessions.replace(session, -1);
+            DataAccess.getInstance().leaveGame(cmd.getGameID(), team);
+        } catch (ServiceException | IOException e) {
+            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            //output = "invalid move";
+            msg.setErrorMessage(output);
+            try {
+                notify(session, msg);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     private void handleMove(Session session, String message, UserGameCommand cmd) {
@@ -99,7 +129,7 @@ public class WebSocketHandler {
                 output = "you are observing";
                 throw new ServiceException(400);
             }
-            if(gameData.game() == null) {
+            if(gameData == null) {
                 //todo: handle
                 output = "game does not exist";
                 throw new ServiceException(500);
@@ -172,6 +202,10 @@ public class WebSocketHandler {
             }
             if(!Objects.equals(gameData.whiteUsername(), username) && !Objects.equals(gameData.blackUsername(), username)) {
                 output = "you are observing";
+                throw new ServiceException(400);
+            }
+            if(!gameData.isActive()) {
+                output = "game is over";
                 throw new ServiceException(400);
             }
             ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
