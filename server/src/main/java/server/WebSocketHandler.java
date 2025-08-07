@@ -50,9 +50,13 @@ public class WebSocketHandler {
 
     private void handleConnect(Session session, String message, UserGameCommand cmd) {
         Server.sessions.replace(session, cmd.getGameID());
-        String output = "Unknown";
+        String output = "Unknown error";
         try {
             String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
+            if(username ==null) {
+                output = "auth error";
+                throw new ServiceException(500);
+            }
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
             if(gameData == null) {
 
@@ -110,9 +114,9 @@ public class WebSocketHandler {
                 gameData.game().makeMove(cmd.getMove());
                 DataAccess.getInstance().updateGame(cmd.getGameID(), gameData.game());
             } catch (InvalidMoveException e) {
-                msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
                 output = "invalid move";
-                msg.setMessage(output);
+                msg.setErrorMessage(output);
                 notify(session, msg);
                 return;
             }
@@ -134,7 +138,7 @@ public class WebSocketHandler {
             notifyAllBut(session, msg);
         } catch (ServiceException | IOException e) {
             //throw new RuntimeException(e);
-            msg.setMessage(output);
+            msg.setErrorMessage(output);
             try {
                 notify(session, msg);
             } catch (IOException ex) {
@@ -145,6 +149,41 @@ public class WebSocketHandler {
     }
 
     private void handleResign(Session session, String message, UserGameCommand cmd) {
+        String output = "unknown error";
+        ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+        try {
+            String username = DataAccess.getInstance().getUsername(cmd.getAuthToken());
+            GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
+            if(username == null) {
+                //todo: handle error
+                output = "you are observing";
+                throw new ServiceException(400);
+            }
+            if(gameData.game() == null) {
+                //todo: handle
+                output = "game does not exist";
+                throw new ServiceException(500);
+            }
+            ChessGame.TeamColor team = Objects.equals(gameData.whiteUsername(), username) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
+            if(gameData.game().getTeamTurn() != team && !Objects.equals(gameData.whiteUsername(), gameData.blackUsername())) {
+                output = "it is not your turn!";
+                throw new ServiceException(400);
+            }
+            output = username + " has resigned. game over";
+            msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            msg.setMessage(output);
+            notifyAll(session, msg);
+        } catch (ServiceException | IOException e) {
+            //throw new RuntimeException(e);
+            msg.setErrorMessage(output);
+            try {
+                notify(session, msg);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
     }
     private void notifyAllBut(Session session, ServerMessage serverMessage) throws IOException{
         for(Session s : Server.sessions.keySet()) {

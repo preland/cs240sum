@@ -85,4 +85,7 @@ public class DataAccess {
     public void updateGame(int gameID, ChessGame game) {
         storage.updateGame(gameID, game);
     }
+    public void endGame(int gameID) {
+        storage.endGame(gameID);
+    }
 }

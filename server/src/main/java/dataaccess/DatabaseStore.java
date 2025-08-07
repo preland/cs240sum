@@ -237,4 +237,7 @@ public class DatabaseStore {
             throw new RuntimeException(e);
         }
     }
+
+    public void endGame(int gameID) {
+    }
 }
