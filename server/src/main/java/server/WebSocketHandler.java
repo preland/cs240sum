@@ -52,9 +52,12 @@ public class WebSocketHandler {
         Server.sessions.replace(session, cmd.getGameID());
         try {
             GameData gameData = DataAccess.getInstance().listGames().stream().filter(g -> g.gameID() == cmd.getGameID()).findFirst().orElse(null);
-            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             msg.setGame(gameData);
-            notifyAll(session, msg);
+            notify(session, msg);
+            msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            msg.setGame(null);
+            notifyAllBut(session, msg);
         } catch (ServiceException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -123,10 +126,20 @@ public class WebSocketHandler {
 
     private void handleResign(Session session, String message) {
     }
+    private void notifyAllBut(Session session, ServerMessage serverMessage) throws IOException{
+        for(Session s : Server.sessions.keySet()) {
+            if(session==s) {
+                continue;
+            }
+            if(Objects.equals(Server.sessions.get(s), Server.sessions.get(session))) {
+                notify(session, serverMessage);
+            }
+        }
+    }
     private void notifyAll(Session session, ServerMessage serverMessage) throws IOException{
         for(Session s : Server.sessions.keySet()) {
             if(Objects.equals(Server.sessions.get(s), Server.sessions.get(session))) {
-                notify(session, serverMessage);
+                notify(s, serverMessage);
             }
         }
     }
