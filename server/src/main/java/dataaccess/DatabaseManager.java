@@ -28,6 +28,7 @@ public class DatabaseManager {
                 `blackUsername` VARCHAR(256) DEFAULT NULL,
                 `gameName` VARCHAR(256) NOT NULL,
                 `game` TEXT DEFAULT NULL,
+                `isActive` BOOLEAN NOT NULL,
                 PRIMARY KEY (`gameID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                 """;
