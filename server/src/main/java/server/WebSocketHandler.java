@@ -73,14 +73,7 @@ public class WebSocketHandler {
                 notifyAllBut(session, msg1);
             //}
         } catch (ServiceException | IOException e) {
-            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            msg.setErrorMessage(output);
-
-
-            try {notify(session, msg);
-            } catch (IOException ex) {throw new RuntimeException(ex);
-            }
-            //throw new RuntimeException(e);
+            errorHandle(e, output, session);
         }
     }
 
@@ -107,14 +100,18 @@ public class WebSocketHandler {
             Server.sessions.replace(session, -1);
             DataAccess.getInstance().leaveGame(cmd.getGameID(), team);
         } catch (ServiceException | IOException e) {
-            ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            //output = "invalid move";
-            msg.setErrorMessage(output);
-            try {
-                notify(session, msg);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            errorHandle(e, output, session);
+        }
+    }
+
+    private void errorHandle(Exception e, String output, Session session) {
+        ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+        //output = "invalid move";
+        msg.setErrorMessage(output);
+        try {
+            notify(session, msg);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
