@@ -154,7 +154,7 @@ public class ServerFacade {
     }
 
     private void handleOnMessage(String message) {
-        UserInterface.OnMessage(message);
+        UserInterface.onMessage(message);
     }
     public void sendCommand(UserGameCommand cmd, ChessPosition startPosition, ChessPosition endPosition, String p) {
         ChessPiece.PieceType promotionPiece = null;

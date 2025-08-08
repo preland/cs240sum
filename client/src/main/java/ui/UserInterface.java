@@ -29,7 +29,7 @@ public class UserInterface {
         //this.facade = new ServerFacade();
     }
 
-    public static void OnMessage(String message) {
+    public static void onMessage(String message) {
         ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
         switch(msg.getServerMessageType()){
             case LOAD_GAME:
@@ -54,47 +54,7 @@ public class UserInterface {
             rawInput = scanner.nextLine();
             String[] input = rawInput.split(" ");
             if(inGame) {
-                switch (input[0]) {
-                    case "help":
-                        System.out.println("""
-                                help: shows this
-                                redraw: redraws the game
-                                move <startPosition> <endPosition> (promotionPiece): make a move
-                                leave: leave the game
-                                resign: forfeit the game
-                                moves <position>: show valid moves for given player
-                                """);
-                        break;
-                    case "redraw":
-                        handleRedraw();
-                        break;
-                    case "move":
-                        if(input.length != 3 && input.length != 4) {
-                            System.out.println("invalid input. try again, or type help");
-                            break;
-                        }
-                        if(input.length != 4) {
-                            handleMove(parsePos(input[1]), parsePos(input[2]), null);
-                        } else {
-                            handleMove(parsePos(input[1]), parsePos(input[2]), input[3]);
-                        }
-                        break;
-                    case "leave":
-                        handleLeave();
-                        break;
-                    case "resign":
-                        handleResign();
-                        break;
-                    case "moves":
-                        if(input.length != 2) {
-                            System.out.println("invalid input. try again, or type help");
-                            break;
-                        }
-                        handleMoves(parsePos(input[1]));
-                        break;
-                    default:
-                        System.out.println("invalid input. try again, or type help");
-                }
+                handleGameStuffs(input);
             } else if (postLogin) {
                 switch (input[0]) {
                     case "help":
@@ -180,6 +140,50 @@ public class UserInterface {
                         System.out.println("invalid input. try again, or type help");
                 }
             }
+        }
+    }
+
+    private void handleGameStuffs(String[] input) {
+        switch (input[0]) {
+            case "help":
+                System.out.println("""
+                                help: shows this
+                                redraw: redraws the game
+                                move <startPosition> <endPosition> (promotionPiece): make a move
+                                leave: leave the game
+                                resign: forfeit the game
+                                moves <position>: show valid moves for given player
+                                """);
+                break;
+            case "redraw":
+                handleRedraw();
+                break;
+            case "move":
+                if(input.length != 3 && input.length != 4) {
+                    System.out.println("invalid input. try again, or type help");
+                    break;
+                }
+                if(input.length != 4) {
+                    handleMove(parsePos(input[1]), parsePos(input[2]), null);
+                } else {
+                    handleMove(parsePos(input[1]), parsePos(input[2]), input[3]);
+                }
+                break;
+            case "leave":
+                handleLeave();
+                break;
+            case "resign":
+                handleResign();
+                break;
+            case "moves":
+                if(input.length != 2) {
+                    System.out.println("invalid input. try again, or type help");
+                    break;
+                }
+                handleMoves(parsePos(input[1]));
+                break;
+            default:
+                System.out.println("invalid input. try again, or type help");
         }
     }
 

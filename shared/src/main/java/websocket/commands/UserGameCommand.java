@@ -28,12 +28,6 @@ public class UserGameCommand {
         this.gameID = gameID;
     }
 
-    /*public void setTeam(String teamColor) {
-        this.teamColor = teamColor;
-    }
-    public String getTeam() {
-        return this.teamColor;
-    }*/
     public void setMove(ChessMove move) {
         this.move = move;
     }

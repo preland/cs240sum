@@ -75,10 +75,10 @@ public class WebSocketHandler {
         } catch (ServiceException | IOException e) {
             ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             msg.setErrorMessage(output);
-            try {
-                notify(session, msg);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+
+
+            try {notify(session, msg);
+            } catch (IOException ex) {throw new RuntimeException(ex);
             }
             //throw new RuntimeException(e);
         }
