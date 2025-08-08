@@ -1,12 +1,19 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import model.GameData;
 import model.ListGameResponse;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
+import javax.swing.*;
+import javax.websocket.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -20,11 +27,14 @@ import java.util.Objects;
 public class ServerFacade {
     //ight we gotta listen for stuff somehow....lovely
     int port;
+    Session session;
+    UserInterface ui;
     public ServerFacade() {
         this(8080);
     }
     public ServerFacade(int port) {
         this.port = port;
+        this.ui = UserInterface.getInstance();
     }
 
     public String login(String username, String password) {
@@ -120,6 +130,68 @@ public class ServerFacade {
     public void clear() {
 
         System.out.println(request("DELETE", "/db", null, null));
+    }
+    public void webSocketConnect() {
+        try {
+            URI uri = new URI("ws://localhost:" + port + "/ws");
+            Endpoint e = new Endpoint() {
+                @Override
+                public void onOpen(Session session, EndpointConfig endpointConfig) {
+                }
+            };
+            MessageHandler h = new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String s) {
+                    handleOnMessage(s);
+                }
+            };
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            this.session = container.connectToServer(e, uri);
+            this.session.addMessageHandler(h);
+        } catch (DeploymentException | URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void handleOnMessage(String message) {
+        UserInterface.OnMessage(message);
+    }
+    public void sendCommand(UserGameCommand cmd, ChessPosition startPosition, ChessPosition endPosition, String p) {
+        ChessPiece.PieceType promotionPiece = null;
+        if(p != null) {
+            switch (p) {
+                case "KING":
+                    promotionPiece = ChessPiece.PieceType.KING;
+                    break;
+                case "QUEEN":
+                    promotionPiece = ChessPiece.PieceType.QUEEN;
+                    break;
+                case "ROOK":
+                    promotionPiece = ChessPiece.PieceType.ROOK;
+                    break;
+                case "KNIGHT":
+                    promotionPiece = ChessPiece.PieceType.KNIGHT;
+                    break;
+                case "BISHOP":
+                    promotionPiece = ChessPiece.PieceType.BISHOP;
+                    break;
+                case "PAWN":
+                    promotionPiece = ChessPiece.PieceType.PAWN;
+                    break;
+            }
+        }
+        cmd.setMove(new ChessMove(startPosition, endPosition, promotionPiece));
+        String message = new Gson().toJson(cmd);
+        session.getAsyncRemote().sendText(message);
+    }
+
+    public ChessGame getGame(int gameID, String authToken) {
+        ArrayList<GameData> games = listGames(authToken);
+        GameData gameData = games.stream().filter(g -> g.gameID() == gameID).findFirst().orElse(null);
+        if(gameData==null){
+            return null;
+        }
+        return gameData.game();
     }
     //public void
 }

@@ -18,8 +18,14 @@ public class ServerMessage {
     public void setMessage(String message) {
         this.message = message;
     }
+    public String getMessage() {
+        return this.message;
+    }
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+    public String getErrorMessage() {
+        return this.errorMessage;
     }
     public enum ServerMessageType {
         LOAD_GAME,

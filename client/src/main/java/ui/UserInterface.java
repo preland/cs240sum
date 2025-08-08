@@ -4,7 +4,10 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import com.google.gson.Gson;
 import model.GameData;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -16,13 +19,34 @@ public class UserInterface {
     boolean quit = false;
     boolean postLogin = false;
     boolean inGame = false;
-    int currentGame = -1;
-    ServerFacade facade;
-    String authToken;
-    public UserInterface() {
-        this.facade = new ServerFacade();
+    static boolean playerTeam;
+    static int currentGame = -1;
+    static ServerFacade facade;
+    static String authToken;
+    private static final UserInterface INSTANCE = new UserInterface();
+    public static UserInterface getInstance(){return INSTANCE;}
+    private UserInterface() {
+        //this.facade = new ServerFacade();
     }
+
+    public static void OnMessage(String message) {
+        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
+        switch(msg.getServerMessageType()){
+            case LOAD_GAME:
+                //idk if this is right tbh
+                handelViewGame(currentGame, playerTeam);
+                break;
+            case ERROR:
+                System.out.println(msg.getErrorMessage());
+                break;
+            case NOTIFICATION:
+                System.out.println(msg.getMessage());
+                break;
+        }
+    }
+
     public void run() {
+        this.facade = new ServerFacade();
         String rawInput = "";
         System.out.println("welcome chess. type help for help. type quit for unhelp");
         Scanner scanner = new Scanner(System.in);
@@ -115,7 +139,7 @@ public class UserInterface {
                             break;
                         }
                         try {
-                            handleViewGame(Integer.parseInt(input[1]));
+                            handleViewGame(Integer.parseInt(input[1]), true);
                         } catch (NumberFormatException e) {
                             System.out.println("invalid input. try again, or type help");
                             break;
@@ -160,26 +184,46 @@ public class UserInterface {
     }
 
     private void handleRedraw() {
-
+        handelViewGame(currentGame, playerTeam);
     }
 
     private void handleMove(ChessPosition chessPosition, ChessPosition chessPosition1, String s) {
+        if(chessPosition==null || chessPosition1==null) {
+            System.out.println("invalid input. try again, or type help");
+            return;
+        }
+        facade.sendCommand(new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, currentGame), chessPosition, chessPosition1, s);
     }
 
     private void handleLeave() {
+        facade.sendCommand(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, currentGame), null, null, null);
+        inGame = false;
     }
 
     private void handleResign() {
+        facade.sendCommand(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, currentGame), null, null, null);
     }
 
     private void handleMoves(ChessPosition chessPosition) {
+        if(chessPosition==null) {
+            System.out.println("invalid input. try again, or type help");
+            return;
+        }
     }
 
     private ChessPosition parsePos(String s) {
         if(s.length() != 2) {
             return null;
         }
-        int row = Integer.parseInt(String.valueOf(s.charAt(1)));
+        int row = -1;
+        try {
+            row = Integer.parseInt(String.valueOf(s.charAt(1)));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        if(row<1 || row > 8) {
+            return null;
+        }
         int col = -1;
         char colChar = s.charAt(0);
         switch(colChar) {
@@ -246,9 +290,11 @@ public class UserInterface {
         if(teamName.equals("WHITE")) {
             System.out.println("joining game");
             req = facade.joinGame(gameID, true, authToken);
+            playerTeam = true;
         } else if(teamName.equals("BLACK")) {
             System.out.println("joining game");
             req = facade.joinGame(gameID, false, authToken);
+            playerTeam = false;
         } else {
             System.out.println("invalid color choice");
             return;
@@ -263,6 +309,10 @@ public class UserInterface {
         else {
             System.out.println("successfully joined");
             System.out.println(viewGame(new ChessGame(), Objects.equals("WHITE", teamName)));
+            inGame = true;
+            currentGame = gameID;
+            facade.webSocketConnect();
+            facade.sendCommand(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, currentGame), null, null, null);
         }
 
     }
@@ -310,8 +360,12 @@ public class UserInterface {
         }
     }
 
-    private void handleViewGame(int gameID) {
-        //todo: add string parsing, for now just display initial board
+    private void handleViewGame(int gameID, boolean isWhitePerspective) {
+        facade.sendCommand(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, currentGame), null, null, null);
+        //handelViewGame(gameID, isWhitePerspective);
+    }
+    private static void handelViewGame(int gameID, boolean isWhitePerspective) {
+
         boolean isMatched = false;
         ArrayList<GameData> req = facade.listGames(authToken);
         for (int i = 0; i < req.size(); i++) {
@@ -323,12 +377,12 @@ public class UserInterface {
             System.out.println("game not found");
             return;
         }
-        ChessGame testGame = new ChessGame();
-        System.out.println(viewGame(testGame, true));
+        ChessGame testGame = facade.getGame(gameID, authToken);
+        System.out.println(viewGame(testGame, isWhitePerspective));
 
     }
 
-    private String viewGame(ChessGame testGame, boolean isWhitePerspective) {
+    private static String viewGame(ChessGame testGame, boolean isWhitePerspective) {
         ChessBoard board = testGame.getBoard();
         String output = "";
         boolean isOddSpace = true;
@@ -367,7 +421,7 @@ public class UserInterface {
         return output;
     }
 
-    private String getNum(int i) {
+    private static String getNum(int i) {
         switch (i) {
             case 1:
                 return ONE_CHAR;
@@ -389,7 +443,7 @@ public class UserInterface {
         return "INVALID";
     }
 
-    private String getCharacter(ChessPiece piece) {
+    private static String getCharacter(ChessPiece piece) {
         String output = "";
         if(piece == null) {
             return EMPTY;
